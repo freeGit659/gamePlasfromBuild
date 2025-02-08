@@ -1,42 +1,2194 @@
-System.register("chunks:///_virtual/BackgroundCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(t){var r,n,o,c;return{setters:[function(t){r=t.inheritsLoose},function(t){n=t.cclegacy,o=t._decorator,c=t.Component}],execute:function(){var u;n._RF.push({},"51d779uGaRDBq044YHPAyyV","BackgroundCtrl",void 0);var e=o.ccclass;o.property,t("BackgroundCtrl",e("BackgroundCtrl")(u=function(t){function n(){return t.apply(this,arguments)||this}r(n,t);var o=n.prototype;return o.start=function(){},o.update=function(t){},n}(c))||u);n._RF.pop()}}}));
+System.register("chunks:///_virtual/BackgroundCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, Component;
 
-System.register("chunks:///_virtual/CharacterCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc","./EventCode.ts","./Emitter.ts"],(function(t){var i,e,n,a,o,s,r,h,c,d,l,u,g,p,y;return{setters:[function(t){i=t.applyDecoratedDescriptor,e=t.inheritsLoose,n=t.initializerDefineProperty,a=t.assertThisInitialized},function(t){o=t.cclegacy,s=t._decorator,r=t.KeyCode,h=t.BoxCollider2D,c=t.Animation,d=t.RigidBody2D,l=t.Vec2,u=t.Vec3,g=t.Component},function(t){p=t.default},function(t){y=t.Emitter}],execute:function(){var f,C,E,m,v,A,N,B,Y;o._RF.push({},"8556aeFmK5H/68zUQRY0TkS","CharacterCtrl",void 0);var M=s.ccclass,k=s.property,T="idle",_="jump",K="defense",b="run",w="attack";r.KEY_A,r.KEY_D,r.KEY_W,r.KEY_S,r.KEY_Q,r.KEY_E,r.KEY_R,t("CharacterCtrl",(f=M("CharacterCtrl"),C=k(h),E=k(c),m=k(d),f((N=i((A=function(t){function i(){for(var i,e=arguments.length,o=new Array(e),s=0;s<e;s++)o[s]=arguments[s];return i=t.call.apply(t,[this].concat(o))||this,n(i,"boxCollider",N,a(i)),n(i,"animationChar",B,a(i)),n(i,"rigidBody",Y,a(i)),i.speed=4,i.attackSpeed=0,i.jumpForce=5,i.stateCharacter=T,i.isJumping=!1,i.isMoving=!1,i.isAttack=!1,i.direction=0,i.airControlFactor=.2,i.targetNode=null,i}e(i,t);var o=i.prototype;return o.onLoad=function(){this.initEvent()},o.initEvent=function(){this.node.on(p.KEY_BOARD,this.onKeyBoardPress,this),this.node.on(p.RIGID.COLLISION_BEGIN,this.onContact,this),y.instance.on(p.ENEMY.LEFT_CLICK,this.onTarget,this)},o.update=function(t){this.action(t)},o.onKeyBoardPress=function(t,i){if(i)switch(this.onUnTarget(this.targetNode),t){case r.KEY_A:this.direction=i?-1:0,this.isMoving=!0;break;case r.KEY_D:this.direction=i?1:0,this.isMoving=!0;break;case r.KEY_W:if(!this.isJumping&&this.rigidBody){var e=0!==this.direction?this.direction*this.speed*.5:0;this.rigidBody.linearVelocity=new l(e,this.jumpForce),this.isJumping=!0,this.isMoving=!1}}else{var n=this.rigidBody.linearVelocity;t!=r.KEY_A&&t!=r.KEY_D||(this.isMoving=!1,this.rigidBody.linearVelocity=new l(0,n.y))}},o.action=function(t){this.handleAttack(t),this.isMoving?(this.handleMoving(t),this.stateCharacter!=b&&(this.stateCharacter=b,this.playAnimation(b))):this.isJumping?this.stateCharacter!=_&&(this.stateCharacter=_,this.playAnimation(_)):this.isAttack||this.stateCharacter!=T&&(this.stateCharacter=T,this.playAnimation(T)),this.stateCharacter==K&&this.defense()},o.handleMoving=function(t){if(this.rigidBody){var i=this.rigidBody.linearVelocity;if(this.isJumping){var e=i.x+this.direction*this.airControlFactor*this.speed*t;this.rigidBody.linearVelocity=new l(e,i.y)}else this.rigidBody.linearVelocity=new l(this.direction*this.speed,i.y),this.node.setScale(new u(this.direction,1,1))}},o.handleAttack=function(t){if(this.targetNode){if(this.rigidBody){var i=this.rigidBody.linearVelocity;if(this.targetNode){var e=this.node.position,n=this.targetNode.position,a=Math.abs(e.x-n.x),o=n.x>e.x?1:-1;a>=20?(this.isMoving=!0,this.direction=o,this.stateCharacter!=b&&(this.stateCharacter=b,this.playAnimation(b)),this.rigidBody.linearVelocity=new l(this.direction*this.speed,i.y),this.node.setScale(new u(this.direction,1,1))):this.isAttack||(this.isMoving=!1,this.direction=0,this.isAttack=!0,this.stateCharacter=w,this.rigidBody.linearVelocity=new l(0,i.y))}}this.attackSpeed-=t,this.isAttack&&this.attackSpeed<=0&&(this.playAnimation(w),this.attackSpeed=1,this.targetNode.emit(p.ENEMY.ACTION.HIT,10))}},o.handleJump=function(){this.rigidBody&&this.rigidBody.applyForceToCenter(new l(0,this.jumpForce),!0)},o.defense=function(){},o.attack=function(t){var i=this.node.getWorldPosition(),e=this.targetNode.getWorldPosition();console.warn(i,e)},o.playAnimation=function(t){this.animationChar.stop(),this.animationChar.play(t)},o.onContact=function(){this.isJumping=!1},o.onTarget=function(t){t&&t.type==p.ENEMY.TYPE.NORMAL&&(this.targetNode&&this.onUnTarget(this.targetNode),this.targetNode=t,this.attack(t),t.emit(p.ENEMY.ACTION.TARGETED,!0))},o.onUnTarget=function(t){t&&(t.type==p.ENEMY.TYPE.NORMAL&&t.emit(p.ENEMY.ACTION.TARGETED,!1),this.targetNode=null,this.isAttack=!1)},i}(g)).prototype,"boxCollider",[C],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),B=i(A.prototype,"animationChar",[E],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),Y=i(A.prototype,"rigidBody",[m],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),v=A))||v));o._RF.pop()}}}));
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
 
-System.register("chunks:///_virtual/DataStore.ts",["cc"],(function(t){var e,r;return{setters:[function(t){e=t.cclegacy,r=t._decorator}],execute:function(){var o;e._RF.push({},"e5f6bX2PsdMvpUBCvkMo+BY","DataStore",void 0);var c=r.ccclass;r.property,t("DataStore",c("DataStore")(o=function(){function t(){}return t.prototype.setUserStats=function(){},t}())||o);e._RF.pop()}}}));
+      cclegacy._RF.push({}, "51d779uGaRDBq044YHPAyyV", "BackgroundCtrl", undefined);
 
-System.register("chunks:///_virtual/debug-view-runtime-control.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(t){var e,o,i,n,s,l,r,a,g,h,p,c,C,d,m,u,L;return{setters:[function(t){e=t.applyDecoratedDescriptor,o=t.inheritsLoose,i=t.initializerDefineProperty,n=t.assertThisInitialized},function(t){s=t.cclegacy,l=t._decorator,r=t.Node,a=t.Color,g=t.Canvas,h=t.UITransform,p=t.instantiate,c=t.Label,C=t.RichText,d=t.Toggle,m=t.Button,u=t.director,L=t.Component}],execute:function(){var f,M,b,v,T,S,x,E,I;s._RF.push({},"b2bd1+njXxJxaFY3ymm06WU","debug-view-runtime-control",void 0);var A=l.ccclass,y=l.property;t("DebugViewRuntimeControl",(f=A("internal.DebugViewRuntimeControl"),M=y(r),b=y(r),v=y(r),f((x=e((S=function(t){function e(){for(var e,o=arguments.length,s=new Array(o),l=0;l<o;l++)s[l]=arguments[l];return e=t.call.apply(t,[this].concat(s))||this,i(e,"compositeModeToggle",x,n(e)),i(e,"singleModeToggle",E,n(e)),i(e,"EnableAllCompositeModeButton",I,n(e)),e._single=0,e.strSingle=["No Single Debug","Vertex Color","Vertex Normal","Vertex Tangent","World Position","Vertex Mirror","Face Side","UV0","UV1","UV Lightmap","Project Depth","Linear Depth","Fragment Normal","Fragment Tangent","Fragment Binormal","Base Color","Diffuse Color","Specular Color","Transparency","Metallic","Roughness","Specular Intensity","IOR","Direct Diffuse","Direct Specular","Direct All","Env Diffuse","Env Specular","Env All","Emissive","Light Map","Shadow","AO","Fresnel","Direct Transmit Diffuse","Direct Transmit Specular","Env Transmit Diffuse","Env Transmit Specular","Transmit All","Direct Internal Specular","Env Internal Specular","Internal All","Fog"],e.strComposite=["Direct Diffuse","Direct Specular","Env Diffuse","Env Specular","Emissive","Light Map","Shadow","AO","Normal Map","Fog","Tone Mapping","Gamma Correction","Fresnel","Transmit Diffuse","Transmit Specular","Internal Specular","TT"],e.strMisc=["CSM Layer Coloration","Lighting With Albedo"],e.compositeModeToggleList=[],e.singleModeToggleList=[],e.miscModeToggleList=[],e.textComponentList=[],e.labelComponentList=[],e.textContentList=[],e.hideButtonLabel=void 0,e._currentColorIndex=0,e.strColor=["<color=#ffffff>","<color=#000000>","<color=#ff0000>","<color=#00ff00>","<color=#0000ff>"],e.color=[a.WHITE,a.BLACK,a.RED,a.GREEN,a.BLUE],e}o(e,t);var s=e.prototype;return s.start=function(){if(this.node.parent.getComponent(g)){var t=this.node.parent.getComponent(h),e=.5*t.width,o=.5*t.height,i=.1*e-e,n=o-.1*o,s=this.node.getChildByName("MiscMode"),l=p(s);l.parent=this.node,l.name="Buttons";var r=p(s);r.parent=this.node,r.name="Titles";for(var u=0;u<2;u++){var L=p(this.EnableAllCompositeModeButton.getChildByName("Label"));L.setPosition(i+(u>0?450:150),n,0),L.setScale(.75,.75,.75),L.parent=r;var f=L.getComponent(c);f.string=u?"----------Composite Mode----------":"----------Single Mode----------",f.color=a.WHITE,f.overflow=0,this.labelComponentList[this.labelComponentList.length]=f}n-=20;for(var M=0,b=0;b<this.strSingle.length;b++,M++){b===this.strSingle.length>>1&&(i+=200,M=0);var v=b?p(this.singleModeToggle):this.singleModeToggle;v.setPosition(i,n-20*M,0),v.setScale(.5,.5,.5),v.parent=this.singleModeToggle.parent;var T=v.getComponentInChildren(C);T.string=this.strSingle[b],this.textComponentList[this.textComponentList.length]=T,this.textContentList[this.textContentList.length]=T.string,v.on(d.EventType.TOGGLE,this.toggleSingleMode,this),this.singleModeToggleList[b]=v}i+=200,this.EnableAllCompositeModeButton.setPosition(i+15,n,0),this.EnableAllCompositeModeButton.setScale(.5,.5,.5),this.EnableAllCompositeModeButton.on(m.EventType.CLICK,this.enableAllCompositeMode,this),this.EnableAllCompositeModeButton.parent=l;var S=this.EnableAllCompositeModeButton.getComponentInChildren(c);this.labelComponentList[this.labelComponentList.length]=S;var x=p(this.EnableAllCompositeModeButton);x.setPosition(i+90,n,0),x.setScale(.5,.5,.5),x.on(m.EventType.CLICK,this.changeTextColor,this),x.parent=l,(S=x.getComponentInChildren(c)).string="TextColor",this.labelComponentList[this.labelComponentList.length]=S;var E=p(this.EnableAllCompositeModeButton);E.setPosition(i+200,n,0),E.setScale(.5,.5,.5),E.on(m.EventType.CLICK,this.hideUI,this),E.parent=this.node.parent,(S=E.getComponentInChildren(c)).string="Hide UI",this.labelComponentList[this.labelComponentList.length]=S,this.hideButtonLabel=S,n-=40;for(var I=0;I<this.strMisc.length;I++){var A=p(this.compositeModeToggle);A.setPosition(i,n-20*I,0),A.setScale(.5,.5,.5),A.parent=s;var y=A.getComponentInChildren(C);y.string=this.strMisc[I],this.textComponentList[this.textComponentList.length]=y,this.textContentList[this.textContentList.length]=y.string,A.getComponent(d).isChecked=!!I,A.on(d.EventType.TOGGLE,I?this.toggleLightingWithAlbedo:this.toggleCSMColoration,this),this.miscModeToggleList[I]=A}n-=150;for(var D=0;D<this.strComposite.length;D++){var B=D?p(this.compositeModeToggle):this.compositeModeToggle;B.setPosition(i,n-20*D,0),B.setScale(.5,.5,.5),B.parent=this.compositeModeToggle.parent;var w=B.getComponentInChildren(C);w.string=this.strComposite[D],this.textComponentList[this.textComponentList.length]=w,this.textContentList[this.textContentList.length]=w.string,B.on(d.EventType.TOGGLE,this.toggleCompositeMode,this),this.compositeModeToggleList[D]=B}}else console.error("debug-view-runtime-control should be child of Canvas")},s.isTextMatched=function(t,e){var o=new String(t),i=o.search(">");return-1===i?t===e:(o=(o=o.substr(i+1)).substr(0,o.search("<")))===e},s.toggleSingleMode=function(t){for(var e=u.root.debugView,o=t.getComponentInChildren(C),i=0;i<this.strSingle.length;i++)this.isTextMatched(o.string,this.strSingle[i])&&(e.singleMode=i)},s.toggleCompositeMode=function(t){for(var e=u.root.debugView,o=t.getComponentInChildren(C),i=0;i<this.strComposite.length;i++)this.isTextMatched(o.string,this.strComposite[i])&&e.enableCompositeMode(i,t.isChecked)},s.toggleLightingWithAlbedo=function(t){u.root.debugView.lightingWithAlbedo=t.isChecked},s.toggleCSMColoration=function(t){u.root.debugView.csmLayerColoration=t.isChecked},s.enableAllCompositeMode=function(t){var e=u.root.debugView;e.enableAllCompositeMode(!0);for(var o=0;o<this.compositeModeToggleList.length;o++){this.compositeModeToggleList[o].getComponent(d).isChecked=!0}var i=this.miscModeToggleList[0].getComponent(d);i.isChecked=!1,e.csmLayerColoration=!1,(i=this.miscModeToggleList[1].getComponent(d)).isChecked=!0,e.lightingWithAlbedo=!0},s.hideUI=function(t){var e=this.node.getChildByName("Titles"),o=!e.active;this.singleModeToggleList[0].parent.active=o,this.miscModeToggleList[0].parent.active=o,this.compositeModeToggleList[0].parent.active=o,this.EnableAllCompositeModeButton.parent.active=o,e.active=o,this.hideButtonLabel.string=o?"Hide UI":"Show UI"},s.changeTextColor=function(t){this._currentColorIndex++,this._currentColorIndex>=this.strColor.length&&(this._currentColorIndex=0);for(var e=0;e<this.textComponentList.length;e++)this.textComponentList[e].string=this.strColor[this._currentColorIndex]+this.textContentList[e]+"</color>";for(var o=0;o<this.labelComponentList.length;o++)this.labelComponentList[o].color=this.color[this._currentColorIndex]},s.onLoad=function(){},s.update=function(t){},e}(L)).prototype,"compositeModeToggle",[M],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),E=e(S.prototype,"singleModeToggle",[b],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),I=e(S.prototype,"EnableAllCompositeModeButton",[v],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),T=S))||T));s._RF.pop()}}}));
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var BackgroundCtrl = exports('BackgroundCtrl', (_dec = ccclass('BackgroundCtrl'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(BackgroundCtrl, _Component);
 
-System.register("chunks:///_virtual/Emitter.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(t){var e,n,r,o,i;return{setters:[function(t){e=t.inheritsLoose},function(t){n=t.cclegacy,r=t._decorator,o=t.EventTarget,i=t.Component}],execute:function(){var c,s;n._RF.push({},"2953eLrQTFDOKjMLEjrQ7rN","Emitter",void 0);var u=r.ccclass,a=(r.property,new o);t("Emitter",u("Emitter")(((s=function(t){function n(){return t.apply(this,arguments)||this}return e(n,t),n.prototype.onLoad=function(){n.instance=a},n}(i)).instance=null,c=s))||c);n._RF.pop()}}}));
+        function BackgroundCtrl() {
+          return _Component.apply(this, arguments) || this;
+        }
 
-System.register("chunks:///_virtual/EnemyController.ts",["./rollupPluginModLoBabelHelpers.js","cc","./Emitter.ts","./EventCode.ts"],(function(t){var n,i,e,o,r,c,a,l,s,u,p;return{setters:[function(t){n=t.applyDecoratedDescriptor,i=t.inheritsLoose,e=t.initializerDefineProperty,o=t.assertThisInitialized},function(t){r=t.cclegacy,c=t._decorator,a=t.Animation,l=t.Node,s=t.Component},function(t){u=t.Emitter},function(t){p=t.default}],execute:function(){var f,E,h,d,y,m,v;r._RF.push({},"4ce30ppgMJGRaeBXDLccTIY","EnemyController",void 0);var g=c.ccclass,C=c.property;t("EnemyController",(f=g("EnemyController"),E=C(a),h=C(l),f((m=n((y=function(t){function n(){for(var n,i=arguments.length,r=new Array(i),c=0;c<i;c++)r[c]=arguments[c];return n=t.call.apply(t,[this].concat(r))||this,e(n,"anim",m,o(n)),e(n,"targetedIcon",v,o(n)),n}i(n,t);var r=n.prototype;return r.onLoad=function(){this.init(),this.initEvent()},r.start=function(){this.targetedIcon.active=!1},r.init=function(){this.node.type=p.ENEMY.TYPE.NORMAL},r.initEvent=function(){var t=this;this.node.on(l.EventType.MOUSE_DOWN,(function(n){t.onClick(n)})),this.node.on(p.ENEMY.ACTION.HIT,this.onHit.bind(this)),this.node.on(p.ENEMY.ACTION.TARGETED,this.onTarget.bind(this))},r.onClick=function(t){u.instance.emit(p.ENEMY.LEFT_CLICK,this.node)},r.onHit=function(t){this.anim.play("Hit")},r.onTarget=function(t){this.targetedIcon.active=t},n}(s)).prototype,"anim",[E],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),v=n(y.prototype,"targetedIcon",[h],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),d=y))||d));r._RF.pop()}}}));
+        var _proto = BackgroundCtrl.prototype;
 
-System.register("chunks:///_virtual/EventCode.ts",["cc"],(function(E){var A;return{setters:[function(E){A=E.cclegacy}],execute:function(){A._RF.push({},"f2b7c2/gMBDCZWA4AIBlsxh","EventCode",void 0);E("default",{KEY_BOARD:"KEY_BOARD",RIGID:{COLLISION_BEGIN:"COLLISION_BEGIN",COLLISION_END:"COLLISION_END",COLLISION_STAY:"COLLISION_STAY",GROUP:{GROUND_CHARACTER:2,CHARACTER_CHARACTER:4}},ENEMY:{LEFT_CLICK:"LEFT_CLICK",TYPE:{NORMAL:"ENE_TYPE_NORMAL"},ACTION:{HIT:"ENE_ACT_HIT",TARGETED:"ENE_ACT_TARGETED"}},CHARACTER:{ATTACK:{NORMAL:"CHA_ATT_NORMAL"}}});A._RF.pop()}}}));
+        _proto.start = function start() {};
 
-System.register("chunks:///_virtual/GameConfigFC2D.ts",["cc"],(function(e){var n;return{setters:[function(e){n=e.cclegacy}],execute:function(){n._RF.push({},"53ecbWh9YlHDazecm4bFsiy","GameConfigFC2D",void 0);var c=e("GameConfigFC2D",(function e(){this.indexScene={GameScene:1,LoginScene:2,LoadingScene:3},e.instance=this}));c.instance=null;new c;n._RF.pop()}}}));
+        _proto.update = function update(deltaTime) {};
 
-System.register("chunks:///_virtual/GameInitialization.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(i){var t,n,o,e;return{setters:[function(i){t=i.inheritsLoose},function(i){n=i.cclegacy,o=i._decorator,e=i.Component}],execute:function(){var a;n._RF.push({},"e33e5gH1pJFCqz2EnKSbXwS","GameInitialization",void 0);var r=o.ccclass;o.property,i("GameInitialization",r("GameInitialization")(a=function(i){function n(){return i.apply(this,arguments)||this}t(n,i);var o=n.prototype;return o.onLoad=function(){this.init()},o.init=function(){},n}(e))||a);n._RF.pop()}}}));
+        return BackgroundCtrl;
+      }(Component)) || _class));
 
-System.register("chunks:///_virtual/GroundCellCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(t){var r,e,n,i,o,u,s,l,a,c;return{setters:[function(t){r=t.applyDecoratedDescriptor,e=t.inheritsLoose,n=t.initializerDefineProperty,i=t.assertThisInitialized},function(t){o=t.cclegacy,u=t._decorator,s=t.SpriteFrame,l=t.Node,a=t.Sprite,c=t.Component}],execute:function(){var p,d,g,h,y,f,v;o._RF.push({},"79978ic6kpIX5g+t9Qv0p30","GroundCellCtrl",void 0);var D=u.ccclass,C=u.property;t("GroundCellCtrl",(p=D("GroundCellCtrl"),d=C(s),g=C(s),p((f=r((y=function(t){function r(){for(var r,e=arguments.length,o=new Array(e),u=0;u<e;u++)o[u]=arguments[u];return r=t.call.apply(t,[this].concat(o))||this,n(r,"groundDry",f,i(r)),n(r,"groundWet",v,i(r)),r.groundIsDry=!0,r}e(r,t);var o=r.prototype;return o.start=function(){this.intEvent(),this.groundIsDry=!0,this.setState(!1)},o.intEvent=function(){var t=this;this.node.on(l.EventType.MOUSE_DOWN,(function(){t.setState(!0)}),this)},o.setState=function(t){this.groundIsDry=t&&!this.groundIsDry,this.node.getComponent(a).spriteFrame=this.groundIsDry?this.groundDry:this.groundWet},r}(c)).prototype,"groundDry",[d],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),v=r(y.prototype,"groundWet",[g],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),h=y))||h));o._RF.pop()}}}));
+      cclegacy._RF.pop();
+    }
+  };
+});
 
-System.register("chunks:///_virtual/JoystickCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(t){var n,o,r,i;return{setters:[function(t){n=t.inheritsLoose},function(t){o=t.cclegacy,r=t._decorator,i=t.Component}],execute:function(){var c;o._RF.push({},"f41450E04tNhZBf4/mHCyPu","JoystickCtrl",void 0);var e=r.ccclass;r.property,t("JoystickCtrl",e("JoystickCtrl")(c=function(t){function o(){return t.apply(this,arguments)||this}n(o,t);var r=o.prototype;return r.onLoad=function(){this.initEvent()},r.initEvent=function(){},o}(i))||c);o._RF.pop()}}}));
+System.register("chunks:///_virtual/CharacterCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts', './Emitter.ts', './Creature.ts'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, KeyCode, Vec2, Vec3, EventCode, Emitter, creatureAction, Creature;
 
-System.register("chunks:///_virtual/LoadGameByPrefabs.ts",["./rollupPluginModLoBabelHelpers.js","cc","./GameConfigFC2D.ts"],(function(e){var n,i,t,a,r,o,l,c,s,u;return{setters:[function(e){n=e.applyDecoratedDescriptor,i=e.inheritsLoose,t=e.initializerDefineProperty,a=e.assertThisInitialized},function(e){r=e.cclegacy,o=e._decorator,l=e.Prefab,c=e.instantiate,s=e.Component},function(e){u=e.GameConfigFC2D}],execute:function(){var d,f,p,g,b,S,y,h,m,L,v;r._RF.push({},"fded5teeL5C+JUaYMyP2a1g","LoadGameByPrefabs",void 0);var C=o.ccclass,P=o.property;e("LoadGameByPrefabs",(d=C("LoadGameByPrefabs"),f=P(l),p=P(l),g=P(l),b=P(l),d((h=n((y=function(e){function n(){for(var n,i=arguments.length,r=new Array(i),o=0;o<i;o++)r[o]=arguments[o];return n=e.call.apply(e,[this].concat(r))||this,t(n,"persisNode",h,a(n)),t(n,"loadingScene",m,a(n)),t(n,"loginScene",L,a(n)),t(n,"gameScene",v,a(n)),n}return i(n,e),n.prototype.onLoad=function(){var e=c(this.loadingScene);this.node.addChild(e),e.setSiblingIndex(u.instance.indexScene.LoadingScene);var n=c(this.loginScene);this.node.addChild(n),n.setSiblingIndex(u.instance.indexScene.LoginScene);var i=c(this.gameScene);this.node.addChild(i),i.setSiblingIndex(u.instance.indexScene.GameScene)},n}(s)).prototype,"persisNode",[f],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),m=n(y.prototype,"loadingScene",[p],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),L=n(y.prototype,"loginScene",[g],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),v=n(y.prototype,"gameScene",[b],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),S=y))||S));r._RF.pop()}}}));
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      KeyCode = module.KeyCode;
+      Vec2 = module.Vec2;
+      Vec3 = module.Vec3;
+    }, function (module) {
+      EventCode = module.default;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      creatureAction = module.creatureAction;
+      Creature = module.Creature;
+    }],
+    execute: function () {
+      var _dec, _class;
 
-System.register("chunks:///_virtual/LoadingController.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(o){var n,t,r,e;return{setters:[function(o){n=o.inheritsLoose},function(o){t=o.cclegacy,r=o._decorator,e=o.Component}],execute:function(){var i;t._RF.push({},"f5b52xF5klDAIY+ewE3nAQn","LoadingController",void 0);var c=r.ccclass;r.property,o("LoadingController",c("LoadingController")(i=function(o){function t(){return o.apply(this,arguments)||this}return n(t,o),t.prototype.onLoad=function(){this.node.destroy()},t}(e))||i);t._RF.pop()}}}));
+      cclegacy._RF.push({}, "8556aeFmK5H/68zUQRY0TkS", "CharacterCtrl", undefined);
 
-System.register("chunks:///_virtual/LoginController.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(e){var r,t,o,n,i,a,s,l,c;return{setters:[function(e){r=e.applyDecoratedDescriptor,t=e.inheritsLoose,o=e.initializerDefineProperty,n=e.assertThisInitialized},function(e){i=e.cclegacy,a=e._decorator,s=e.EditBox,l=e.sys,c=e.Component}],execute:function(){var u,p,g,f,b,d,y;i._RF.push({},"af74cQ+OtxBErWVdG9Qz7iG","LoginController",void 0);var h=a.ccclass,m=a.property;e("LoginController",(u=h("LoginController"),p=m(s),g=m(s),u((d=r((b=function(e){function r(){for(var r,t=arguments.length,i=new Array(t),a=0;a<t;a++)i[a]=arguments[a];return r=e.call.apply(e,[this].concat(i))||this,o(r,"boxUserName",d,n(r)),o(r,"boxPassword",y,n(r)),r}t(r,e);var i=r.prototype;return i.start=function(){this.login()},i.login=function(){var e=this.boxUserName.string,r=this.boxPassword.string,t=e+"-"+r;l.localStorage.setItem("token",t),l.localStorage.setItem("user_name",e),l.localStorage.setItem("password",r),this.node.destroy()},r}(c)).prototype,"boxUserName",[p],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),y=r(b.prototype,"boxPassword",[g],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),f=b))||f));i._RF.pop()}}}));
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var CharacterCtrl = exports('CharacterCtrl', (_dec = ccclass('CharacterCtrl'), _dec(_class = /*#__PURE__*/function (_Creature) {
+        _inheritsLoose(CharacterCtrl, _Creature);
 
-System.register("chunks:///_virtual/main",["./debug-view-runtime-control.ts","./CharacterCtrl.ts","./UserControl.ts","./DataStore.ts","./Emitter.ts","./EventCode.ts","./GameConfigFC2D.ts","./GameInitialization.ts","./LoadGameByPrefabs.ts","./LoadingController.ts","./LoginController.ts","./BackgroundCtrl.ts","./GroundCellCtrl.ts","./JoystickCtrl.ts","./MapCtrl.ts","./NodePoolContainerCtrl.ts","./PlayerCtrl.ts","./RigidCtrl.ts","./EnemyController.ts"],(function(){return{setters:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],execute:function(){}}}));
+        function CharacterCtrl() {
+          var _this;
 
-System.register("chunks:///_virtual/MapCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(t){var r,e,n,i,o,a,l,c;return{setters:[function(t){r=t.applyDecoratedDescriptor,e=t.inheritsLoose,n=t.initializerDefineProperty,i=t.assertThisInitialized},function(t){o=t.cclegacy,a=t._decorator,l=t.Node,c=t.Component}],execute:function(){var p,u,s,f,y;o._RF.push({},"a30dbTUyQhAVpLubITG5Kv9","MapCtrl",void 0);var v=a.ccclass,h=a.property;t("MapCtrl",(p=v("MapCtrl"),u=h(l),p((y=r((f=function(t){function r(){for(var r,e=arguments.length,o=new Array(e),a=0;a<e;a++)o[a]=arguments[a];return r=t.call.apply(t,[this].concat(o))||this,n(r,"mapPool",y,i(r)),r}e(r,t);var o=r.prototype;return o.start=function(){},o.intEvent=function(){},o.initMap=function(t){},r}(c)).prototype,"mapPool",[u],{configurable:!0,enumerable:!0,writable:!0,initializer:null}),s=f))||s));o._RF.pop()}}}));
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
 
-System.register("chunks:///_virtual/NodePoolContainerCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc"],(function(e){var t,r,o,n,i,a,l,c;return{setters:[function(e){t=e.applyDecoratedDescriptor,r=e.inheritsLoose,o=e.initializerDefineProperty,n=e.assertThisInitialized},function(e){i=e.cclegacy,a=e._decorator,l=e.Prefab,c=e.Component}],execute:function(){var u,p,s,f,d,C,y,P;i._RF.push({},"7063ajQgytCppVYHpS8xkda","NodePoolContainerCtrl",void 0);var b=a.ccclass,h=a.property;e("NodePoolContainerCtrl",(u=b("NodePoolContainerCtrl"),p=h(l),s=h(l),u(((P=function(e){function t(){var r;return r=e.call(this)||this,o(r,"mapPool",C,n(r)),o(r,"character",y,n(r)),t.instance=n(r),r}r(t,e);var i=t.prototype;return i.start=function(){},i.update=function(e){},t}(c)).instance=null,C=t((d=P).prototype,"mapPool",[p],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return[]}}),y=t(d.prototype,"character",[s],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return[]}}),f=d))||f));i._RF.pop()}}}));
+          _this = _Creature.call.apply(_Creature, [this].concat(args)) || this;
+          _this.direction = 0;
+          _this.airControlFactor = 0.2;
+          _this.targetNode = null;
+          return _this;
+        }
 
-System.register("chunks:///_virtual/PlayerCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc","./NodePoolContainerCtrl.ts"],(function(r){var e,t,n,o,i,a,l,c,u,p;return{setters:[function(r){e=r.applyDecoratedDescriptor,t=r.inheritsLoose,n=r.initializerDefineProperty,o=r.assertThisInitialized},function(r){i=r.cclegacy,a=r._decorator,l=r.Node,c=r.Prefab,u=r.Component},function(r){p=r.NodePoolContainerCtrl}],execute:function(){var s,f,y,P,b,h,d;i._RF.push({},"1e13b50jTFNs7FY/y09LmxR","PlayerCtrl",void 0);var C=a.ccclass,v=a.property;r("PlayerCtrl",(s=C("PlayerCtrl"),f=v(l),y=v(c),s((h=e((b=function(r){function e(){for(var e,t=arguments.length,i=new Array(t),a=0;a<t;a++)i[a]=arguments[a];return e=r.call.apply(r,[this].concat(i))||this,n(e,"playerPool",h,o(e)),n(e,"charPrefab",d,o(e)),e}t(e,r);var i=e.prototype;return i.onLoad=function(){},i.initEvent=function(){},i.initPlayer=function(){p.instance.character.forEach((function(r){}))},e}(u)).prototype,"playerPool",[f],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),d=e(b.prototype,"charPrefab",[y],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),P=b))||P));i._RF.pop()}}}));
+        var _proto = CharacterCtrl.prototype;
 
-System.register("chunks:///_virtual/RigidCtrl.ts",["./rollupPluginModLoBabelHelpers.js","cc","./EventCode.ts"],(function(t){var n,i,o,e,r,c,l,s,a,C;return{setters:[function(t){n=t.applyDecoratedDescriptor,i=t.inheritsLoose,o=t.initializerDefineProperty,e=t.assertThisInitialized},function(t){r=t.cclegacy,c=t._decorator,l=t.BoxCollider2D,s=t.Contact2DType,a=t.Component},function(t){C=t.default}],execute:function(){var u,d,h,f,p;r._RF.push({},"7d889nf491C8J2ymPMjL4Ut","RigidCtrl",void 0);var I=c.ccclass,y=c.property;t("RigidCtrl",(u=I("RigidCtrl"),d=y(l),u((p=n((f=function(t){function n(){for(var n,i=arguments.length,r=new Array(i),c=0;c<i;c++)r[c]=arguments[c];return n=t.call.apply(t,[this].concat(r))||this,o(n,"boxCollider",p,e(n)),n}i(n,t);var r=n.prototype;return r.onLoad=function(){this.initEvent()},r.start=function(){this.initNode();var t=this.boxCollider;t.on(s.BEGIN_CONTACT,this.onBeginContact,this),t.on(s.END_CONTACT,this.onEndContact,this),t.on(s.STAY_CONTACT,this.stayContact,this)},r.initEvent=function(){},r.initNode=function(){this.boxCollider||(this.boxCollider=this.node.getComponent(l))},r.onBeginContact=function(t,n,i){this.node.emit(C.RIGID.COLLISION_BEGIN,t,n)},r.onEndContact=function(t,n,i){this.node.emit(C.RIGID.COLLISION_END,t,n)},r.stayContact=function(t,n,i){this.node.emit(C.RIGID.COLLISION_STAY,t,n)},n}(a)).prototype,"boxCollider",[d],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return null}}),h=f))||h));r._RF.pop()}}}));
+        _proto.onLoad = function onLoad() {
+          this.initEvent();
+        };
 
-System.register("chunks:///_virtual/UserControl.ts",["./rollupPluginModLoBabelHelpers.js","cc","./EventCode.ts"],(function(t){var n,o,e,i,r,s,c,l,u,a,p;return{setters:[function(t){n=t.applyDecoratedDescriptor,o=t.inheritsLoose,e=t.initializerDefineProperty,i=t.assertThisInitialized},function(t){r=t.cclegacy,s=t._decorator,c=t.Node,l=t.input,u=t.Input,a=t.Component},function(t){p=t.default}],execute:function(){var f,y,h,d,E;r._RF.push({},"65a5erdHE9O/oLuSbi7GTCp","UserControl",void 0);var C=s.ccclass,v=s.property;t("UserControl",(f=C("UserControl"),y=v(c),f((E=n((d=function(t){function n(){for(var n,o=arguments.length,r=new Array(o),s=0;s<o;s++)r[s]=arguments[s];return n=t.call.apply(t,[this].concat(r))||this,e(n,"listNodeControl",E,i(n)),n}o(n,t);var r=n.prototype;return r.onLoad=function(){this.initEvent()},r.initEvent=function(){l.on(u.EventType.KEY_DOWN,this.onKeyDown,this),l.on(u.EventType.KEY_UP,this.onKeyUp,this),l.on(u.EventType.KEY_PRESSING,this.onKeyPressing,this)},r.onKeyDown=function(t){this.listNodeControl.forEach((function(n){n.emit(p.KEY_BOARD,t.keyCode,!0)}))},r.onKeyUp=function(t){this.listNodeControl.forEach((function(n){n.emit(p.KEY_BOARD,t.keyCode,!1)}))},r.onKeyPressing=function(t){this.listNodeControl.forEach((function(n){n.emit(p.KEY_BOARD,t.keyCode,!0)}))},n}(a)).prototype,"listNodeControl",[y],{configurable:!0,enumerable:!0,writable:!0,initializer:function(){return[]}}),h=d))||h));r._RF.pop()}}}));
+        _proto.initEvent = function initEvent() {
+          Emitter.instance.on(EventCode.KEY_BOARD, this.onKeyBoardPress, this);
+          Emitter.instance.on('SET_SPEED', this.setSpeed, this);
+          this.node.on(EventCode.RIGID.COLLISION_BEGIN, this.onContact, this);
+          Emitter.instance.on(EventCode.ENEMY.LEFT_CLICK, this.onTarget, this);
+        };
+
+        _proto.update = function update(dt) {
+          _Creature.prototype.update.call(this, dt);
+
+          this.action(dt);
+        } //---- character control --- //
+        ;
+
+        _proto.onKeyBoardPress = function onKeyBoardPress(data) {
+          var _this2 = this;
+
+          var key = data.key,
+              isPress = data.isPress,
+              isHold = data.isHold,
+              listKeyPressing = data.listKeyPressing;
+
+          if (!isPress) {
+            var currentVelocity = this.rigidBody.linearVelocity;
+
+            if (listKeyPressing.length) {
+              listKeyPressing.map(function (e) {
+                if (e == KeyCode.KEY_A || e == KeyCode.KEY_D) {
+                  _this2.direction = e == KeyCode.KEY_D ? 1 : -1;
+                  _this2.isMoving = true;
+                }
+              });
+            } else {
+              this.isMoving = false;
+              this.rigidBody.linearVelocity = new Vec2(0, currentVelocity.y);
+            }
+          } else {
+            this.onUnTarget(this.targetNode);
+
+            switch (key) {
+              case KeyCode.KEY_A:
+              case KeyCode.KEY_D:
+                this.direction = key == KeyCode.KEY_D ? 1 : -1;
+                this.isMoving = true;
+                break;
+
+              case KeyCode.KEY_W:
+                if (!this.isJumping && this.rigidBody) {
+                  // Nếu không di chuyển (đứng yên), nhảy thẳng đứng
+                  var jumpVelocityX = this.direction !== 0 ? this.direction * this.moveSpeed * 0.5 : 0;
+                  this.rigidBody.linearVelocity = new Vec2(jumpVelocityX, this.jumpForce);
+                  this.isJumping = true;
+                  this.isMoving = false;
+                } else if (this.isJumping && !this.isDoubleJump && !isHold) {
+                  var doubleJumpVelocityX = this.direction !== 0 ? this.direction * this.moveSpeed * 0.5 : 0;
+                  this.rigidBody.linearVelocity = new Vec2(doubleJumpVelocityX, this.jumpForce);
+                  this.isDoubleJump = true;
+                }
+
+                break;
+            }
+          }
+        } //--- character action ---//
+        ;
+
+        _proto.action = function action(dt) {
+          this.handleAttack(dt);
+
+          if (this.isMoving) {
+            this.handleMoving(dt);
+          } else if (this.isJumping) {
+            if (this.state != creatureAction.jump && this.state != creatureAction.fall || this.isDoubleJump) {
+              this.state = creatureAction.jump;
+              this.playAnimation(creatureAction.jump);
+            }
+
+            var currentVelocity = this.rigidBody.linearVelocity;
+
+            if (currentVelocity.y < 0 && this.state != creatureAction.fall) {
+              this.state = creatureAction.fall;
+              this.playAnimation(creatureAction.fall);
+            }
+          } else if (!this.isAttack) {
+            {
+              if (this.state != creatureAction.idle) {
+                this.state = creatureAction.idle;
+                this.playAnimation(creatureAction.idle);
+              }
+            }
+          }
+
+          if (this.state == creatureAction.defense) {
+            this.defense();
+          }
+        };
+
+        _proto.handleMoving = function handleMoving(dt) {
+          if (this.rigidBody) {
+            var currentVelocity = this.rigidBody.linearVelocity; // Nếu đang trên mặt đất, di chuyển bình thường
+
+            if (!this.isJumping) {
+              this.rigidBody.linearVelocity = new Vec2(this.direction * this.moveSpeed, currentVelocity.y);
+              this.node.setScale(new Vec3(this.direction, 1, 1));
+
+              if (this.state != creatureAction.moving) {
+                this.state = creatureAction.moving;
+                this.playAnimation(creatureAction.moving);
+              }
+            } else {
+              // Trên không: kiểm soát di chuyển chậm hơn
+              var airVelocity = currentVelocity.x + this.direction * this.airControlFactor * this.moveSpeed * dt;
+              this.rigidBody.linearVelocity = new Vec2(airVelocity, currentVelocity.y);
+
+              if (this.state != creatureAction.jump) {
+                this.state = creatureAction.jump;
+                this.playAnimation(creatureAction.jump);
+              }
+
+              if (currentVelocity.y < 0) {
+                this.playAnimation('fall');
+              }
+            }
+          }
+        };
+
+        _proto.handleAttack = function handleAttack(dt) {
+          if (!this.targetNode) return;
+
+          if (this.rigidBody) {
+            var currentVelocity = this.rigidBody.linearVelocity; // Nếu đang trên mặt đất, di chuyển bình thường
+
+            if (this.targetNode) {
+              var playerPos = this.node.position;
+              var targetPos = this.targetNode.position;
+              var distance = Math.abs(playerPos.x - targetPos.x);
+              var targetDirection = targetPos.x > playerPos.x ? 1 : -1;
+
+              if (distance >= 20) {
+                // Nếu chưa đến gần mục tiêu
+                this.isMoving = true;
+                this.direction = targetDirection;
+
+                if (this.state != creatureAction.moving) {
+                  this.state = creatureAction.moving;
+                  this.playAnimation(creatureAction.moving);
+                }
+
+                this.rigidBody.linearVelocity = new Vec2(this.direction * this.moveSpeed, currentVelocity.y);
+                this.node.setScale(new Vec3(this.direction, 1, 1));
+              } else if (!this.isAttack) {
+                // Đã đến mục tiêu, dừng lại
+                this.isMoving = false;
+                this.direction = 0;
+                this.isAttack = true;
+                this.rigidBody.linearVelocity = new Vec2(0, currentVelocity.y);
+              }
+            }
+          }
+
+          this.attackSpeed -= dt;
+
+          if (this.isAttack && this.attackSpeed <= 0) {
+            if (this.state != creatureAction.attack) {
+              this.state = creatureAction.attack;
+              this.playAnimation(creatureAction.attack);
+              this.defaultAttackSpeedAnim = 0.2;
+              this.setSpeedAnimation(creatureAction.attack, 0.2);
+            }
+
+            this.attackSpeed = 1;
+            this.targetNode.emit(EventCode.ENEMY.ACTION.HIT, 10);
+          } else if (this.isAttack && this.defaultAttackSpeedAnim <= 0) {
+            if (this.state != creatureAction.idle) {
+              this.state = creatureAction.idle;
+              this.playAnimation(creatureAction.idle);
+            }
+          }
+
+          this.defaultAttackSpeedAnim -= dt;
+        };
+
+        _proto.handleJump = function handleJump() {
+          if (this.rigidBody) {
+            this.rigidBody.applyForceToCenter(new Vec2(0, this.jumpForce), true);
+          }
+        };
+
+        _proto.defense = function defense() {//Todo: defense;
+        };
+
+        _proto.attack = function attack(target) {
+          var playerPos = this.node.getWorldPosition();
+          var targetPos = this.targetNode.getWorldPosition();
+          console.warn(playerPos, targetPos);
+        };
+
+        _proto.playAnimation = function playAnimation(animString) {
+          this.animationChar.stop();
+          this.animationChar.play(animString);
+          this.debugWarn(animString);
+        };
+
+        _proto.setSpeedAnimation = function setSpeedAnimation(animString, speed) {
+          this.animationChar.getState(animString).speed = speed;
+        };
+
+        _proto.onContact = function onContact() {
+          this.isJumping = false;
+          this.isDoubleJump = false;
+          this.playAnimation(creatureAction.idle);
+        };
+
+        _proto.onTarget = function onTarget(target) {
+          if (!target) return;
+
+          if (target['type'] == EventCode.ENEMY.TYPE.NORMAL) {
+            if (this.targetNode) {
+              this.onUnTarget(this.targetNode);
+            }
+
+            this.targetNode = target;
+            this.attack(target);
+            target.emit(EventCode.ENEMY.ACTION.TARGETED, true);
+          }
+        };
+
+        _proto.onUnTarget = function onUnTarget(target) {
+          if (!target) return;
+
+          if (target['type'] == EventCode.ENEMY.TYPE.NORMAL) {
+            target.emit(EventCode.ENEMY.ACTION.TARGETED, false);
+          }
+
+          this.targetNode = null;
+          this.isAttack = false;
+        };
+
+        _proto.setSpeed = function setSpeed(value) {
+          this.moveSpeed = value;
+        };
+
+        return CharacterCtrl;
+      }(Creature)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/CheatCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './Emitter.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, EditBox, Component, Emitter;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      EditBox = module.EditBox;
+      Component = module.Component;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }],
+    execute: function () {
+      var _dec, _dec2, _class, _class2, _descriptor;
+
+      cclegacy._RF.push({}, "b9e70o5BCVCOpPCXFJcqV9y", "CheatCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var CheatCtrl = exports('CheatCtrl', (_dec = ccclass('CheatCtrl'), _dec2 = property(EditBox), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(CheatCtrl, _Component);
+
+        function CheatCtrl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "playerSpeedEB", _descriptor, _assertThisInitialized(_this));
+
+          _this.playerSpeed = 4;
+          return _this;
+        }
+
+        var _proto = CheatCtrl.prototype;
+
+        _proto.start = function start() {
+          this.playerSpeedEB.string = this.playerSpeed.toString();
+          Emitter.instance.emit('SET_SPEED', this.playerSpeed);
+        };
+
+        _proto.update = function update(deltaTime) {};
+
+        _proto.updateSpeed = function updateSpeed() {
+          this.playerSpeed = Number(this.playerSpeedEB.string);
+          Emitter.instance.emit('SET_SPEED', this.playerSpeed);
+        };
+
+        return CheatCtrl;
+      }(Component), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "playerSpeedEB", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/Creature.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './GameBaseComponent.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, BoxCollider2D, Animation, RigidBody2D, GameBaseComponent;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      BoxCollider2D = module.BoxCollider2D;
+      Animation = module.Animation;
+      RigidBody2D = module.RigidBody2D;
+    }, function (module) {
+      GameBaseComponent = module.GameBaseComponent;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3;
+
+      cclegacy._RF.push({}, "40cdaCRPttOf5K2XYPTw09B", "Creature", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var creatureAction = exports('creatureAction', {
+        idle: 'idle',
+        jump: 'jump',
+        defense: 'defense',
+        moving: 'run',
+        attack: 'attack',
+        fall: 'fall'
+      });
+      var Creature = exports('Creature', (_dec = ccclass('Creature'), _dec2 = property(BoxCollider2D), _dec3 = property(Animation), _dec4 = property(RigidBody2D), _dec(_class = (_class2 = /*#__PURE__*/function (_GameBaseComponent) {
+        _inheritsLoose(Creature, _GameBaseComponent);
+
+        function Creature() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "boxCollider", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "animationChar", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "rigidBody", _descriptor3, _assertThisInitialized(_this));
+
+          _this.moveSpeed = 4;
+          _this.attackSpeed = 0;
+          _this.defaultAttackSpeedAnim = 0.4;
+          _this.jumpForce = 5;
+          _this.state = creatureAction.idle;
+          _this.isJumping = false;
+          _this.isDoubleJump = false;
+          _this.isMoving = false;
+          _this.isAttack = false;
+          return _this;
+        }
+
+        var _proto = Creature.prototype;
+
+        _proto.start = function start() {};
+
+        _proto.update = function update(deltaTime) {};
+
+        return Creature;
+      }(GameBaseComponent), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boxCollider", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "animationChar", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "rigidBody", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/DataStore.ts", ['cc'], function (exports) {
+  var cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "e5f6bX2PsdMvpUBCvkMo+BY", "DataStore", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var DataStore = exports('DataStore', (_dec = ccclass('DataStore'), _dec(_class = /*#__PURE__*/function () {
+        function DataStore() {}
+
+        var _proto = DataStore.prototype;
+
+        _proto.setUserStats = function setUserStats() {};
+
+        return DataStore;
+      }()) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/debug-view-runtime-control.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, Color, Canvas, UITransform, instantiate, Label, RichText, Toggle, Button, director, Component;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Node = module.Node;
+      Color = module.Color;
+      Canvas = module.Canvas;
+      UITransform = module.UITransform;
+      instantiate = module.instantiate;
+      Label = module.Label;
+      RichText = module.RichText;
+      Toggle = module.Toggle;
+      Button = module.Button;
+      director = module.director;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3;
+
+      cclegacy._RF.push({}, "b2bd1+njXxJxaFY3ymm06WU", "debug-view-runtime-control", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var DebugViewRuntimeControl = exports('DebugViewRuntimeControl', (_dec = ccclass('internal.DebugViewRuntimeControl'), _dec2 = property(Node), _dec3 = property(Node), _dec4 = property(Node), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(DebugViewRuntimeControl, _Component);
+
+        function DebugViewRuntimeControl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "compositeModeToggle", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "singleModeToggle", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "EnableAllCompositeModeButton", _descriptor3, _assertThisInitialized(_this));
+
+          _this._single = 0;
+          _this.strSingle = ['No Single Debug', 'Vertex Color', 'Vertex Normal', 'Vertex Tangent', 'World Position', 'Vertex Mirror', 'Face Side', 'UV0', 'UV1', 'UV Lightmap', 'Project Depth', 'Linear Depth', 'Fragment Normal', 'Fragment Tangent', 'Fragment Binormal', 'Base Color', 'Diffuse Color', 'Specular Color', 'Transparency', 'Metallic', 'Roughness', 'Specular Intensity', 'IOR', 'Direct Diffuse', 'Direct Specular', 'Direct All', 'Env Diffuse', 'Env Specular', 'Env All', 'Emissive', 'Light Map', 'Shadow', 'AO', 'Fresnel', 'Direct Transmit Diffuse', 'Direct Transmit Specular', 'Env Transmit Diffuse', 'Env Transmit Specular', 'Transmit All', 'Direct Internal Specular', 'Env Internal Specular', 'Internal All', 'Fog'];
+          _this.strComposite = ['Direct Diffuse', 'Direct Specular', 'Env Diffuse', 'Env Specular', 'Emissive', 'Light Map', 'Shadow', 'AO', 'Normal Map', 'Fog', 'Tone Mapping', 'Gamma Correction', 'Fresnel', 'Transmit Diffuse', 'Transmit Specular', 'Internal Specular', 'TT'];
+          _this.strMisc = ['CSM Layer Coloration', 'Lighting With Albedo'];
+          _this.compositeModeToggleList = [];
+          _this.singleModeToggleList = [];
+          _this.miscModeToggleList = [];
+          _this.textComponentList = [];
+          _this.labelComponentList = [];
+          _this.textContentList = [];
+          _this.hideButtonLabel = void 0;
+          _this._currentColorIndex = 0;
+          _this.strColor = ['<color=#ffffff>', '<color=#000000>', '<color=#ff0000>', '<color=#00ff00>', '<color=#0000ff>'];
+          _this.color = [Color.WHITE, Color.BLACK, Color.RED, Color.GREEN, Color.BLUE];
+          return _this;
+        }
+
+        var _proto = DebugViewRuntimeControl.prototype;
+
+        _proto.start = function start() {
+          // get canvas resolution
+          var canvas = this.node.parent.getComponent(Canvas);
+
+          if (!canvas) {
+            console.error('debug-view-runtime-control should be child of Canvas');
+            return;
+          }
+
+          var uiTransform = this.node.parent.getComponent(UITransform);
+          var halfScreenWidth = uiTransform.width * 0.5;
+          var halfScreenHeight = uiTransform.height * 0.5;
+          var x = -halfScreenWidth + halfScreenWidth * 0.1,
+              y = halfScreenHeight - halfScreenHeight * 0.1;
+          var width = 200,
+              height = 20; // new nodes
+
+          var miscNode = this.node.getChildByName('MiscMode');
+          var buttonNode = instantiate(miscNode);
+          buttonNode.parent = this.node;
+          buttonNode.name = 'Buttons';
+          var titleNode = instantiate(miscNode);
+          titleNode.parent = this.node;
+          titleNode.name = 'Titles'; // title
+
+          for (var i = 0; i < 2; i++) {
+            var newLabel = instantiate(this.EnableAllCompositeModeButton.getChildByName('Label'));
+            newLabel.setPosition(x + (i > 0 ? 50 + width * 2 : 150), y, 0.0);
+            newLabel.setScale(0.75, 0.75, 0.75);
+            newLabel.parent = titleNode;
+
+            var _labelComponent = newLabel.getComponent(Label);
+
+            _labelComponent.string = i ? '----------Composite Mode----------' : '----------Single Mode----------';
+            _labelComponent.color = Color.WHITE;
+            _labelComponent.overflow = 0;
+            this.labelComponentList[this.labelComponentList.length] = _labelComponent;
+          }
+
+          y -= height; // single
+
+          var currentRow = 0;
+
+          for (var _i = 0; _i < this.strSingle.length; _i++, currentRow++) {
+            if (_i === this.strSingle.length >> 1) {
+              x += width;
+              currentRow = 0;
+            }
+
+            var newNode = _i ? instantiate(this.singleModeToggle) : this.singleModeToggle;
+            newNode.setPosition(x, y - height * currentRow, 0.0);
+            newNode.setScale(0.5, 0.5, 0.5);
+            newNode.parent = this.singleModeToggle.parent;
+            var textComponent = newNode.getComponentInChildren(RichText);
+            textComponent.string = this.strSingle[_i];
+            this.textComponentList[this.textComponentList.length] = textComponent;
+            this.textContentList[this.textContentList.length] = textComponent.string;
+            newNode.on(Toggle.EventType.TOGGLE, this.toggleSingleMode, this);
+            this.singleModeToggleList[_i] = newNode;
+          }
+
+          x += width; // buttons
+
+          this.EnableAllCompositeModeButton.setPosition(x + 15, y, 0.0);
+          this.EnableAllCompositeModeButton.setScale(0.5, 0.5, 0.5);
+          this.EnableAllCompositeModeButton.on(Button.EventType.CLICK, this.enableAllCompositeMode, this);
+          this.EnableAllCompositeModeButton.parent = buttonNode;
+          var labelComponent = this.EnableAllCompositeModeButton.getComponentInChildren(Label);
+          this.labelComponentList[this.labelComponentList.length] = labelComponent;
+          var changeColorButton = instantiate(this.EnableAllCompositeModeButton);
+          changeColorButton.setPosition(x + 90, y, 0.0);
+          changeColorButton.setScale(0.5, 0.5, 0.5);
+          changeColorButton.on(Button.EventType.CLICK, this.changeTextColor, this);
+          changeColorButton.parent = buttonNode;
+          labelComponent = changeColorButton.getComponentInChildren(Label);
+          labelComponent.string = 'TextColor';
+          this.labelComponentList[this.labelComponentList.length] = labelComponent;
+          var HideButton = instantiate(this.EnableAllCompositeModeButton);
+          HideButton.setPosition(x + 200, y, 0.0);
+          HideButton.setScale(0.5, 0.5, 0.5);
+          HideButton.on(Button.EventType.CLICK, this.hideUI, this);
+          HideButton.parent = this.node.parent;
+          labelComponent = HideButton.getComponentInChildren(Label);
+          labelComponent.string = 'Hide UI';
+          this.labelComponentList[this.labelComponentList.length] = labelComponent;
+          this.hideButtonLabel = labelComponent; // misc
+
+          y -= 40;
+
+          for (var _i2 = 0; _i2 < this.strMisc.length; _i2++) {
+            var _newNode = instantiate(this.compositeModeToggle);
+
+            _newNode.setPosition(x, y - height * _i2, 0.0);
+
+            _newNode.setScale(0.5, 0.5, 0.5);
+
+            _newNode.parent = miscNode;
+
+            var _textComponent = _newNode.getComponentInChildren(RichText);
+
+            _textComponent.string = this.strMisc[_i2];
+            this.textComponentList[this.textComponentList.length] = _textComponent;
+            this.textContentList[this.textContentList.length] = _textComponent.string;
+
+            var toggleComponent = _newNode.getComponent(Toggle);
+
+            toggleComponent.isChecked = _i2 ? true : false;
+
+            _newNode.on(Toggle.EventType.TOGGLE, _i2 ? this.toggleLightingWithAlbedo : this.toggleCSMColoration, this);
+
+            this.miscModeToggleList[_i2] = _newNode;
+          } // composite
+
+
+          y -= 150;
+
+          for (var _i3 = 0; _i3 < this.strComposite.length; _i3++) {
+            var _newNode2 = _i3 ? instantiate(this.compositeModeToggle) : this.compositeModeToggle;
+
+            _newNode2.setPosition(x, y - height * _i3, 0.0);
+
+            _newNode2.setScale(0.5, 0.5, 0.5);
+
+            _newNode2.parent = this.compositeModeToggle.parent;
+
+            var _textComponent2 = _newNode2.getComponentInChildren(RichText);
+
+            _textComponent2.string = this.strComposite[_i3];
+            this.textComponentList[this.textComponentList.length] = _textComponent2;
+            this.textContentList[this.textContentList.length] = _textComponent2.string;
+
+            _newNode2.on(Toggle.EventType.TOGGLE, this.toggleCompositeMode, this);
+
+            this.compositeModeToggleList[_i3] = _newNode2;
+          }
+        };
+
+        _proto.isTextMatched = function isTextMatched(textUI, textDescription) {
+          var tempText = new String(textUI);
+          var findIndex = tempText.search('>');
+
+          if (findIndex === -1) {
+            return textUI === textDescription;
+          } else {
+            tempText = tempText.substr(findIndex + 1);
+            tempText = tempText.substr(0, tempText.search('<'));
+            return tempText === textDescription;
+          }
+        };
+
+        _proto.toggleSingleMode = function toggleSingleMode(toggle) {
+          var debugView = director.root.debugView;
+          var textComponent = toggle.getComponentInChildren(RichText);
+
+          for (var i = 0; i < this.strSingle.length; i++) {
+            if (this.isTextMatched(textComponent.string, this.strSingle[i])) {
+              debugView.singleMode = i;
+            }
+          }
+        };
+
+        _proto.toggleCompositeMode = function toggleCompositeMode(toggle) {
+          var debugView = director.root.debugView;
+          var textComponent = toggle.getComponentInChildren(RichText);
+
+          for (var i = 0; i < this.strComposite.length; i++) {
+            if (this.isTextMatched(textComponent.string, this.strComposite[i])) {
+              debugView.enableCompositeMode(i, toggle.isChecked);
+            }
+          }
+        };
+
+        _proto.toggleLightingWithAlbedo = function toggleLightingWithAlbedo(toggle) {
+          var debugView = director.root.debugView;
+          debugView.lightingWithAlbedo = toggle.isChecked;
+        };
+
+        _proto.toggleCSMColoration = function toggleCSMColoration(toggle) {
+          var debugView = director.root.debugView;
+          debugView.csmLayerColoration = toggle.isChecked;
+        };
+
+        _proto.enableAllCompositeMode = function enableAllCompositeMode(button) {
+          var debugView = director.root.debugView;
+          debugView.enableAllCompositeMode(true);
+
+          for (var i = 0; i < this.compositeModeToggleList.length; i++) {
+            var _toggleComponent = this.compositeModeToggleList[i].getComponent(Toggle);
+
+            _toggleComponent.isChecked = true;
+          }
+
+          var toggleComponent = this.miscModeToggleList[0].getComponent(Toggle);
+          toggleComponent.isChecked = false;
+          debugView.csmLayerColoration = false;
+          toggleComponent = this.miscModeToggleList[1].getComponent(Toggle);
+          toggleComponent.isChecked = true;
+          debugView.lightingWithAlbedo = true;
+        };
+
+        _proto.hideUI = function hideUI(button) {
+          var titleNode = this.node.getChildByName('Titles');
+          var activeValue = !titleNode.active;
+          this.singleModeToggleList[0].parent.active = activeValue;
+          this.miscModeToggleList[0].parent.active = activeValue;
+          this.compositeModeToggleList[0].parent.active = activeValue;
+          this.EnableAllCompositeModeButton.parent.active = activeValue;
+          titleNode.active = activeValue;
+          this.hideButtonLabel.string = activeValue ? 'Hide UI' : 'Show UI';
+        };
+
+        _proto.changeTextColor = function changeTextColor(button) {
+          this._currentColorIndex++;
+
+          if (this._currentColorIndex >= this.strColor.length) {
+            this._currentColorIndex = 0;
+          }
+
+          for (var i = 0; i < this.textComponentList.length; i++) {
+            this.textComponentList[i].string = this.strColor[this._currentColorIndex] + this.textContentList[i] + '</color>';
+          }
+
+          for (var _i4 = 0; _i4 < this.labelComponentList.length; _i4++) {
+            this.labelComponentList[_i4].color = this.color[this._currentColorIndex];
+          }
+        };
+
+        _proto.onLoad = function onLoad() {};
+
+        _proto.update = function update(deltaTime) {};
+
+        return DebugViewRuntimeControl;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "compositeModeToggle", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "singleModeToggle", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "EnableAllCompositeModeButton", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/Emitter.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, EventTarget, Component;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      EventTarget = module.EventTarget;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class, _class2;
+
+      cclegacy._RF.push({}, "2953eLrQTFDOKjMLEjrQ7rN", "Emitter", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var eventEmitter = new EventTarget();
+      var Emitter = exports('Emitter', (_dec = ccclass('Emitter'), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(Emitter, _Component);
+
+        function Emitter() {
+          return _Component.apply(this, arguments) || this;
+        }
+
+        var _proto = Emitter.prototype;
+
+        _proto.onLoad = function onLoad() {
+          Emitter.instance = eventEmitter;
+        };
+
+        return Emitter;
+      }(Component), _class2.instance = null, _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/EnemyController.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './Emitter.ts', './EventCode.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Animation, Node, Component, Emitter, EventCode;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Animation = module.Animation;
+      Node = module.Node;
+      Component = module.Component;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      EventCode = module.default;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2;
+
+      cclegacy._RF.push({}, "4ce30ppgMJGRaeBXDLccTIY", "EnemyController", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var EnemyController = exports('EnemyController', (_dec = ccclass('EnemyController'), _dec2 = property(Animation), _dec3 = property(Node), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(EnemyController, _Component);
+
+        function EnemyController() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "anim", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "targetedIcon", _descriptor2, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = EnemyController.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.init();
+          this.initEvent();
+        };
+
+        _proto.start = function start() {
+          this.targetedIcon.active = false;
+        };
+
+        _proto.init = function init() {
+          this.node['type'] = EventCode.ENEMY.TYPE.NORMAL;
+        };
+
+        _proto.initEvent = function initEvent() {
+          var _this2 = this;
+
+          this.node.on(Node.EventType.MOUSE_DOWN, function (event) {
+            _this2.onClick(event);
+          });
+          this.node.on(EventCode.ENEMY.ACTION.HIT, this.onHit.bind(this));
+          this.node.on(EventCode.ENEMY.ACTION.TARGETED, this.onTarget.bind(this));
+        };
+
+        _proto.onClick = function onClick(event) {
+          Emitter.instance.emit(EventCode.ENEMY.LEFT_CLICK, this.node);
+        };
+
+        _proto.onHit = function onHit(damage) {
+          this.anim.play('Hit');
+        };
+
+        _proto.onTarget = function onTarget(isTarget) {
+          this.targetedIcon.active = isTarget;
+        };
+
+        return EnemyController;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "anim", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "targetedIcon", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/EventCode.ts", ['cc'], function (exports) {
+  var cclegacy;
+  return {
+    setters: [function (module) {
+      cclegacy = module.cclegacy;
+    }],
+    execute: function () {
+      cclegacy._RF.push({}, "f2b7c2/gMBDCZWA4AIBlsxh", "EventCode", undefined);
+
+      var EventCode = exports('default', {
+        KEY_BOARD: "KEY_BOARD",
+        RIGID: {
+          COLLISION_BEGIN: 'COLLISION_BEGIN',
+          COLLISION_END: 'COLLISION_END',
+          COLLISION_STAY: 'COLLISION_STAY',
+          GROUP: {
+            GROUND_CHARACTER: 2,
+            CHARACTER_CHARACTER: 4
+          }
+        },
+        ENEMY: {
+          LEFT_CLICK: 'LEFT_CLICK',
+          TYPE: {
+            NORMAL: 'ENE_TYPE_NORMAL'
+          },
+          ACTION: {
+            HIT: 'ENE_ACT_HIT',
+            TARGETED: "ENE_ACT_TARGETED"
+          }
+        },
+        CHARACTER: {
+          ATTACK: {
+            NORMAL: 'CHA_ATT_NORMAL'
+          }
+        }
+      });
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameBaseComponent.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './Emitter.ts', './Utils.ts'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, Component, Emitter, Utils;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      Utils = module.Utils;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "fa0817NOqJJ44eZb9OaZuY5", "GameBaseComponent", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var GameBaseComponent = exports('GameBaseComponent', (_dec = ccclass('GameBaseComponent'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(GameBaseComponent, _Component);
+
+        function GameBaseComponent() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+          _this.gameUtils = new Utils();
+          return _this;
+        }
+
+        var _proto = GameBaseComponent.prototype;
+
+        _proto.onDestroy = function onDestroy() {
+          Emitter.instance.targetOff(this);
+        };
+
+        _proto.debugLog = function debugLog(title, data) {
+          console.log(title, data);
+        };
+
+        _proto.debugWarn = function debugWarn(title, data) {
+          console.warn(title, data);
+        };
+
+        return GameBaseComponent;
+      }(Component)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameConfigFC2D.ts", ['cc'], function (exports) {
+  var cclegacy;
+  return {
+    setters: [function (module) {
+      cclegacy = module.cclegacy;
+    }],
+    execute: function () {
+      cclegacy._RF.push({}, "53ecbWh9YlHDazecm4bFsiy", "GameConfigFC2D", undefined);
+
+      var GameConfigFC2D = exports('GameConfigFC2D', function GameConfigFC2D() {
+        this.indexScene = {
+          GameScene: 1,
+          LoginScene: 2,
+          LoadingScene: 3
+        };
+        GameConfigFC2D.instance = this;
+      });
+      GameConfigFC2D.instance = null;
+      var GameConfig = new GameConfigFC2D();
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameInitialization.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, Component;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "e33e5gH1pJFCqz2EnKSbXwS", "GameInitialization", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var GameInitialization = exports('GameInitialization', (_dec = ccclass('GameInitialization'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(GameInitialization, _Component);
+
+        function GameInitialization() {
+          return _Component.apply(this, arguments) || this;
+        }
+
+        var _proto = GameInitialization.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.init();
+        };
+
+        _proto.init = function init() {};
+
+        return GameInitialization;
+      }(Component)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GroundCellCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, SpriteFrame, Node, Sprite, Component;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      SpriteFrame = module.SpriteFrame;
+      Node = module.Node;
+      Sprite = module.Sprite;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2;
+
+      cclegacy._RF.push({}, "79978ic6kpIX5g+t9Qv0p30", "GroundCellCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var GroundCellCtrl = exports('GroundCellCtrl', (_dec = ccclass('GroundCellCtrl'), _dec2 = property(SpriteFrame), _dec3 = property(SpriteFrame), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(GroundCellCtrl, _Component);
+
+        function GroundCellCtrl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "groundDry", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "groundWet", _descriptor2, _assertThisInitialized(_this));
+
+          _this.groundIsDry = true;
+          return _this;
+        }
+
+        var _proto = GroundCellCtrl.prototype;
+
+        _proto.start = function start() {
+          this.intEvent();
+          this.groundIsDry = true;
+          this.setState(false);
+        };
+
+        _proto.intEvent = function intEvent() {
+          var _this2 = this;
+
+          this.node.on(Node.EventType.MOUSE_DOWN, function () {
+            _this2.setState(true);
+          }, this);
+        };
+
+        _proto.setState = function setState(isChange) {
+          this.groundIsDry = isChange && !this.groundIsDry;
+          this.node.getComponent(Sprite).spriteFrame = this.groundIsDry ? this.groundDry : this.groundWet;
+        };
+
+        return GroundCellCtrl;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "groundDry", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "groundWet", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/JoystickCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, Component;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "f41450E04tNhZBf4/mHCyPu", "JoystickCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var JoystickCtrl = exports('JoystickCtrl', (_dec = ccclass('JoystickCtrl'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(JoystickCtrl, _Component);
+
+        function JoystickCtrl() {
+          return _Component.apply(this, arguments) || this;
+        }
+
+        var _proto = JoystickCtrl.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.initEvent();
+        };
+
+        _proto.initEvent = function initEvent() {};
+
+        return JoystickCtrl;
+      }(Component)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/LoadGameByPrefabs.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './GameConfigFC2D.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Prefab, instantiate, Component, GameConfigFC2D;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Prefab = module.Prefab;
+      instantiate = module.instantiate;
+      Component = module.Component;
+    }, function (module) {
+      GameConfigFC2D = module.GameConfigFC2D;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+
+      cclegacy._RF.push({}, "fded5teeL5C+JUaYMyP2a1g", "LoadGameByPrefabs", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var LoadGameByPrefabs = exports('LoadGameByPrefabs', (_dec = ccclass('LoadGameByPrefabs'), _dec2 = property(Prefab), _dec3 = property(Prefab), _dec4 = property(Prefab), _dec5 = property(Prefab), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(LoadGameByPrefabs, _Component);
+
+        function LoadGameByPrefabs() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "persisNode", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "loadingScene", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "loginScene", _descriptor3, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "gameScene", _descriptor4, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = LoadGameByPrefabs.prototype;
+
+        _proto.onLoad = function onLoad() {
+          var loadingNode = instantiate(this.loadingScene);
+          this.node.addChild(loadingNode);
+          loadingNode.setSiblingIndex(GameConfigFC2D.instance.indexScene.LoadingScene);
+          var loginNode = instantiate(this.loginScene);
+          this.node.addChild(loginNode);
+          loginNode.setSiblingIndex(GameConfigFC2D.instance.indexScene.LoginScene);
+          var gameNode = instantiate(this.gameScene);
+          this.node.addChild(gameNode);
+          gameNode.setSiblingIndex(GameConfigFC2D.instance.indexScene.GameScene);
+        };
+
+        return LoadGameByPrefabs;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "persisNode", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "loadingScene", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "loginScene", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "gameScene", [_dec5], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/LoadingController.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, Component;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "f5b52xF5klDAIY+ewE3nAQn", "LoadingController", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var LoadingController = exports('LoadingController', (_dec = ccclass('LoadingController'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(LoadingController, _Component);
+
+        function LoadingController() {
+          return _Component.apply(this, arguments) || this;
+        }
+
+        var _proto = LoadingController.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.node.destroy();
+        };
+
+        return LoadingController;
+      }(Component)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/LoginController.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, EditBox, sys, Component;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      EditBox = module.EditBox;
+      sys = module.sys;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2;
+
+      cclegacy._RF.push({}, "af74cQ+OtxBErWVdG9Qz7iG", "LoginController", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var LoginController = exports('LoginController', (_dec = ccclass('LoginController'), _dec2 = property(EditBox), _dec3 = property(EditBox), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(LoginController, _Component);
+
+        function LoginController() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "boxUserName", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "boxPassword", _descriptor2, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = LoginController.prototype;
+
+        _proto.start = function start() {
+          this.login();
+        };
+
+        _proto.login = function login() {
+          var userName = this.boxUserName.string;
+          var password = this.boxPassword.string;
+          var token = userName + "-" + password;
+          sys.localStorage.setItem('token', token);
+          sys.localStorage.setItem('user_name', userName);
+          sys.localStorage.setItem('password', password);
+          this.node.destroy();
+        };
+
+        return LoginController;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boxUserName", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "boxPassword", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/main", ['./debug-view-runtime-control.ts', './CharacterCtrl.ts', './SmoothCharacterMovement.ts', './UserControl.ts', './DataStore.ts', './Emitter.ts', './EventCode.ts', './GameBaseComponent.ts', './GameConfigFC2D.ts', './GameInitialization.ts', './LoadGameByPrefabs.ts', './LoadingController.ts', './LoginController.ts', './BackgroundCtrl.ts', './CheatCtrl.ts', './Creature.ts', './GroundCellCtrl.ts', './JoystickCtrl.ts', './MapCtrl.ts', './NodePoolContainerCtrl.ts', './PlayerCtrl.ts', './RigidCtrl.ts', './Utils.ts', './EnemyController.ts'], function () {
+  return {
+    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    execute: function () {}
+  };
+});
+
+System.register("chunks:///_virtual/MapCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, Component;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Node = module.Node;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _class, _class2, _descriptor;
+
+      cclegacy._RF.push({}, "a30dbTUyQhAVpLubITG5Kv9", "MapCtrl", undefined); // import { NodePoolContainerCtrl } from './NodePoolContainerCtrl';
+
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var MapCtrl = exports('MapCtrl', (_dec = ccclass('MapCtrl'), _dec2 = property(Node), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(MapCtrl, _Component);
+
+        function MapCtrl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "mapPool", _descriptor, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = MapCtrl.prototype;
+
+        _proto.start = function start() {// this.initMap({name: 'GroundCell', position: v3(-100, 0)});
+          // this.initMap({name: 'GroundCell', position: v3(0, 0)});
+          // this.initMap({name: 'GroundCell', position: v3(100, 0)});
+        };
+
+        _proto.intEvent = function intEvent() {};
+
+        _proto.initMap = function initMap(data) {// NodePoolContainerCtrl.instance.mapPool.forEach((node)=>{
+          //     if(data.name == node.name){
+          //         this.createComponent(node, data);
+          //     }
+          // })
+        } // createComponent(ojPrefab: Prefab, data) {
+        //     const mapComponent = instantiate(ojPrefab);
+        //     mapComponent.setParent(this.mapPool);
+        //     mapComponent.position = data.position;
+        // }
+        ;
+
+        return MapCtrl;
+      }(Component), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "mapPool", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/NodePoolContainerCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Prefab, Component;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Prefab = module.Prefab;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _class3;
+
+      cclegacy._RF.push({}, "7063ajQgytCppVYHpS8xkda", "NodePoolContainerCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var NodePoolContainerCtrl = exports('NodePoolContainerCtrl', (_dec = ccclass('NodePoolContainerCtrl'), _dec2 = property(Prefab), _dec3 = property(Prefab), _dec(_class = (_class2 = (_class3 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(NodePoolContainerCtrl, _Component);
+
+        function NodePoolContainerCtrl() {
+          var _this;
+
+          _this = _Component.call(this) || this;
+
+          _initializerDefineProperty(_this, "mapPool", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "character", _descriptor2, _assertThisInitialized(_this));
+
+          NodePoolContainerCtrl.instance = _assertThisInitialized(_this);
+          return _this;
+        }
+
+        var _proto = NodePoolContainerCtrl.prototype;
+
+        _proto.start = function start() {};
+
+        _proto.update = function update(deltaTime) {};
+
+        return NodePoolContainerCtrl;
+      }(Component), _class3.instance = null, _class3), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "mapPool", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "character", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/PlayerCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './NodePoolContainerCtrl.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, Prefab, Component, NodePoolContainerCtrl;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Node = module.Node;
+      Prefab = module.Prefab;
+      Component = module.Component;
+    }, function (module) {
+      NodePoolContainerCtrl = module.NodePoolContainerCtrl;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2;
+
+      cclegacy._RF.push({}, "1e13b50jTFNs7FY/y09LmxR", "PlayerCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var PlayerCtrl = exports('PlayerCtrl', (_dec = ccclass('PlayerCtrl'), _dec2 = property(Node), _dec3 = property(Prefab), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(PlayerCtrl, _Component);
+
+        function PlayerCtrl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "playerPool", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "charPrefab", _descriptor2, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = PlayerCtrl.prototype;
+
+        _proto.onLoad = function onLoad() {};
+
+        _proto.initEvent = function initEvent() {};
+
+        _proto.initPlayer = function initPlayer() {
+          NodePoolContainerCtrl.instance.character.forEach(function (character) {});
+        };
+
+        return PlayerCtrl;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "playerPool", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "charPrefab", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/RigidCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, BoxCollider2D, Contact2DType, Component, EventCode;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      BoxCollider2D = module.BoxCollider2D;
+      Contact2DType = module.Contact2DType;
+      Component = module.Component;
+    }, function (module) {
+      EventCode = module.default;
+    }],
+    execute: function () {
+      var _dec, _dec2, _class, _class2, _descriptor;
+
+      cclegacy._RF.push({}, "7d889nf491C8J2ymPMjL4Ut", "RigidCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var RigidCtrl = exports('RigidCtrl', (_dec = ccclass('RigidCtrl'), _dec2 = property(BoxCollider2D), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(RigidCtrl, _Component);
+
+        function RigidCtrl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "boxCollider", _descriptor, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = RigidCtrl.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.initEvent();
+        };
+
+        _proto.start = function start() {
+          //     PhysicsSystem2D.instance.enable = true;
+          //     PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb |
+          // EPhysics2DDrawFlags.Pair |
+          // EPhysics2DDrawFlags.CenterOfMass |
+          // EPhysics2DDrawFlags.Joint |
+          // EPhysics2DDrawFlags.Shape;
+          this.initNode();
+          var collider = this.boxCollider;
+          collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+          collider.on(Contact2DType.END_CONTACT, this.onEndContact, this);
+          collider.on(Contact2DType.STAY_CONTACT, this.stayContact, this);
+        };
+
+        _proto.initEvent = function initEvent() {};
+
+        _proto.initNode = function initNode() {
+          if (!this.boxCollider) {
+            this.boxCollider = this.node.getComponent(BoxCollider2D);
+          }
+        };
+
+        _proto.onBeginContact = function onBeginContact(selfCollider, otherCollider, contact) {
+          this.node.emit(EventCode.RIGID.COLLISION_BEGIN, selfCollider, otherCollider);
+        };
+
+        _proto.onEndContact = function onEndContact(selfCollider, otherCollider, contact) {
+          this.node.emit(EventCode.RIGID.COLLISION_END, selfCollider, otherCollider);
+        };
+
+        _proto.stayContact = function stayContact(selfCollider, otherCollider, contact) {
+          this.node.emit(EventCode.RIGID.COLLISION_STAY, selfCollider, otherCollider);
+        };
+
+        return RigidCtrl;
+      }(Component), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "boxCollider", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/SmoothCharacterMovement.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './UserControl.ts', './GameBaseComponent.ts', './Emitter.ts', './EventCode.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Animation, Vec3, RigidBody2D, Vec2, KEY_CONFIG, GameBaseComponent, Emitter, EventCode;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Animation = module.Animation;
+      Vec3 = module.Vec3;
+      RigidBody2D = module.RigidBody2D;
+      Vec2 = module.Vec2;
+    }, function (module) {
+      KEY_CONFIG = module.KEY_CONFIG;
+    }, function (module) {
+      GameBaseComponent = module.GameBaseComponent;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      EventCode = module.default;
+    }],
+    execute: function () {
+      var _dec, _dec2, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+
+      cclegacy._RF.push({}, "d00c9gctaNAyK+0zJet59Kv", "SmoothCharacterMovement", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var characterState = {
+        idle: 'idle',
+        jump: 'jump',
+        defense: 'defense',
+        run: 'run',
+        attack: 'attack'
+      };
+      var SmoothCharacterMovement = exports('SmoothCharacterMovement', (_dec = ccclass('SmoothCharacterMovement'), _dec2 = property(Animation), _dec(_class = (_class2 = /*#__PURE__*/function (_GameBaseComponent) {
+        _inheritsLoose(SmoothCharacterMovement, _GameBaseComponent);
+
+        function SmoothCharacterMovement() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "moveSpeed", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "jumpForce", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "directionChangeSpeed", _descriptor3, _assertThisInitialized(_this)); // Speed of direction smooth transition
+
+
+          _initializerDefineProperty(_this, "animFbf", _descriptor4, _assertThisInitialized(_this));
+
+          _this._velocity = new Vec3();
+          _this._currentDirection = new Vec3();
+          _this._targetDirection = new Vec3();
+          _this._activeKeys = new Set();
+          _this._rigidBody = null;
+          _this._stateCurrent = null;
+          return _this;
+        }
+
+        var _proto = SmoothCharacterMovement.prototype;
+
+        _proto.start = function start() {
+          // Initialize input listeners and get Rigidbody
+          Emitter.instance.on(EventCode.KEY_BOARD, this.onKeyBoardPress, this);
+          Emitter.instance.on('SET_SPEED', this.setSpeed, this);
+          this._rigidBody = this.getComponent(RigidBody2D);
+          this._stateCurrent = characterState.idle;
+        };
+
+        _proto.update = function update(dt) {
+          // Reset horizontal target direction based on active keys
+          this._targetDirection.x = 0;
+
+          if (this._activeKeys.has(KEY_CONFIG.PLAYER_CONTROL.MOVE_LEFT)) {
+            this._targetDirection.x = -1;
+            this.run(dt);
+            this.setDirectorCharacter(-1);
+          } else if (this._activeKeys.has(KEY_CONFIG.PLAYER_CONTROL.MOVE_RIGHT)) {
+            this._targetDirection.x = 1;
+            this.setDirectorCharacter(1);
+            this.run(dt);
+          }
+
+          if (this._stateCurrent == characterState.idle) {
+            this._targetDirection.x = 0;
+          }
+        };
+
+        _proto.onKeyBoardPress = function onKeyBoardPress(data) {
+          var key = data.key,
+              isPress = data.isPress,
+              isHold = data.isHold;
+
+          if (!isPress) {
+            this._activeKeys["delete"](key.keyCode);
+
+            this._stateCurrent = characterState.idle;
+          } else {
+            switch (key.keyCode) {
+              case KEY_CONFIG.PLAYER_CONTROL.MOVE_LEFT:
+              case KEY_CONFIG.PLAYER_CONTROL.MOVE_RIGHT:
+                this._activeKeys.add(key.keyCode);
+
+                this._stateCurrent = characterState.run;
+                this.playAnimation(characterState.run);
+                break;
+
+              case KEY_CONFIG.PLAYER_CONTROL.JUMP:
+                if (this._rigidBody) {
+                  var currentVelocity = this._rigidBody.linearVelocity;
+
+                  if (Math.abs(currentVelocity.y) < 0.01) {
+                    // Check if grounded
+                    this._rigidBody.applyLinearImpulseToCenter(new Vec2(0, this.jumpForce), true);
+
+                    this._stateCurrent = characterState.jump;
+                    this.playAnimation(characterState.jump);
+                  }
+                }
+
+                break;
+            }
+          }
+        };
+
+        _proto.playAnimation = function playAnimation(name) {
+          this.animFbf.stop();
+          this.animFbf.play(name);
+        };
+
+        _proto.setDirectorCharacter = function setDirectorCharacter(director) {
+          this.node.setScale(new Vec3(director, this.node.scale.y, this.node.scale.z));
+        };
+
+        _proto.run = function run(dt) {
+          // Smoothly interpolate current direction to target direction
+          this._currentDirection.lerp(this._targetDirection, this.directionChangeSpeed * dt); // Apply movement based on current direction
+
+
+          this._velocity.set(this._currentDirection);
+
+          this._velocity.normalize().multiplyScalar(this.moveSpeed * dt);
+
+          var newPosition = new Vec3(this.node.position);
+          newPosition.x += this._velocity.x;
+          this.node.setPosition(newPosition);
+        };
+
+        _proto.setSpeed = function setSpeed(value) {
+          this.moveSpeed = value;
+        };
+
+        return SmoothCharacterMovement;
+      }(GameBaseComponent), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "moveSpeed", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 5;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "jumpForce", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 10;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "directionChangeSpeed", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 10;
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "animFbf", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/UserControl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts', './Emitter.ts', './GameBaseComponent.ts'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, KeyCode, input, Input, EventCode, Emitter, GameBaseComponent;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      KeyCode = module.KeyCode;
+      input = module.input;
+      Input = module.Input;
+    }, function (module) {
+      EventCode = module.default;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      GameBaseComponent = module.GameBaseComponent;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "65a5erdHE9O/oLuSbi7GTCp", "UserControl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var KEY_CONFIG = exports('KEY_CONFIG', {
+        PLAYER_CONTROL: {
+          MOVE_LEFT: KeyCode.KEY_A,
+          MOVE_RIGHT: KeyCode.KEY_D,
+          JUMP: KeyCode.KEY_W,
+          DEFENSE: KeyCode.KEY_S,
+          SKILL_1: KeyCode.KEY_Q,
+          SKILL_2: KeyCode.KEY_E,
+          ULTIMATE: KeyCode.KEY_R,
+          ITEM_1: KeyCode.DIGIT_1,
+          ITEM_2: KeyCode.DIGIT_2
+        }
+      });
+      var UserControl = exports('UserControl', (_dec = ccclass('UserControl'), _dec(_class = /*#__PURE__*/function (_GameBaseComponent) {
+        _inheritsLoose(UserControl, _GameBaseComponent);
+
+        function UserControl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
+          _this.listKeyPressing = [];
+          return _this;
+        }
+
+        var _proto = UserControl.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.initEvent();
+        };
+
+        _proto.initEvent = function initEvent() {
+          input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+          input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+          input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+        };
+
+        _proto.onKeyDown = function onKeyDown(key) {
+          this.listKeyPressing.indexOf(key.keyCode) == -1 && this.listKeyPressing.push(key.keyCode);
+          var data = {
+            key: key.keyCode,
+            isPress: true,
+            isHold: false,
+            listKeyPressing: this.listKeyPressing
+          };
+          Emitter.instance.emit(EventCode.KEY_BOARD, data);
+        };
+
+        _proto.onKeyUp = function onKeyUp(key) {
+          var _this2 = this;
+
+          this.listKeyPressing.map(function (e, index) {
+            e == key.keyCode && _this2.listKeyPressing.splice(index, 1);
+          });
+          var data = {
+            key: key.keyCode,
+            isPress: false,
+            isHold: false,
+            listKeyPressing: this.listKeyPressing
+          };
+          Emitter.instance.emit(EventCode.KEY_BOARD, data);
+        };
+
+        _proto.onKeyPressing = function onKeyPressing(key) {
+          var data = {
+            key: key.keyCode,
+            isPress: true,
+            isHold: true,
+            listKeyPressing: this.listKeyPressing
+          };
+          Emitter.instance.emit(EventCode.KEY_BOARD, data);
+        };
+
+        _proto.onDestroy = function onDestroy() {
+          _GameBaseComponent.prototype.onDestroy.call(this);
+
+          input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+          input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+          input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+        };
+
+        return UserControl;
+      }(GameBaseComponent)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/Utils.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, Component;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "552dcG9myxDrZRLNfYbOy9V", "Utils", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var Utils = exports('Utils', (_dec = ccclass('Utils'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(Utils, _Component);
+
+        function Utils() {
+          return _Component.apply(this, arguments) || this;
+        }
+
+        return Utils;
+      }(Component)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
 
 (function(r) {
   r('virtual:///prerequisite-imports/main', 'chunks:///_virtual/main'); 
