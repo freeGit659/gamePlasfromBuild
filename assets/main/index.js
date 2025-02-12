@@ -37,8 +37,8 @@ System.register("chunks:///_virtual/BackgroundCtrl.ts", ['./rollupPluginModLoBab
   };
 });
 
-System.register("chunks:///_virtual/CharacterCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts', './Emitter.ts', './Creature.ts'], function (exports) {
-  var _inheritsLoose, cclegacy, _decorator, KeyCode, Vec2, Vec3, EventCode, Emitter, creatureAction, Creature;
+System.register("chunks:///_virtual/CharacterCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts', './Emitter.ts', './DynamicEntity.ts'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, KeyCode, EventCode, Emitter, DynamicEntity;
 
   return {
     setters: [function (module) {
@@ -47,15 +47,12 @@ System.register("chunks:///_virtual/CharacterCtrl.ts", ['./rollupPluginModLoBabe
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
       KeyCode = module.KeyCode;
-      Vec2 = module.Vec2;
-      Vec3 = module.Vec3;
     }, function (module) {
       EventCode = module.default;
     }, function (module) {
       Emitter = module.Emitter;
     }, function (module) {
-      creatureAction = module.creatureAction;
-      Creature = module.Creature;
+      DynamicEntity = module.DynamicEntity;
     }],
     execute: function () {
       var _dec, _class;
@@ -64,239 +61,53 @@ System.register("chunks:///_virtual/CharacterCtrl.ts", ['./rollupPluginModLoBabe
 
       var ccclass = _decorator.ccclass,
           property = _decorator.property;
-      var CharacterCtrl = exports('CharacterCtrl', (_dec = ccclass('CharacterCtrl'), _dec(_class = /*#__PURE__*/function (_Creature) {
-        _inheritsLoose(CharacterCtrl, _Creature);
+      var CharacterCtrl = exports('CharacterCtrl', (_dec = ccclass('CharacterCtrl'), _dec(_class = /*#__PURE__*/function (_DynamicEntity) {
+        _inheritsLoose(CharacterCtrl, _DynamicEntity);
 
         function CharacterCtrl() {
-          var _this;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this = _Creature.call.apply(_Creature, [this].concat(args)) || this;
-          _this.direction = 0;
-          _this.airControlFactor = 0.2;
-          _this.targetNode = null;
-          return _this;
+          return _DynamicEntity.apply(this, arguments) || this;
         }
 
         var _proto = CharacterCtrl.prototype;
 
-        _proto.onLoad = function onLoad() {
-          this.initEvent();
-        };
-
         _proto.initEvent = function initEvent() {
-          Emitter.instance.on(EventCode.KEY_BOARD, this.onKeyBoardPress, this);
-          Emitter.instance.on('SET_SPEED', this.setSpeed, this);
-          this.node.on(EventCode.RIGID.COLLISION_BEGIN, this.onContact, this);
+          _DynamicEntity.prototype.initEvent.call(this);
+
+          Emitter.instance.on(EventCode.PLAYER.MOVE, this.onPressMove, this);
+          Emitter.instance.on(EventCode.PLAYER.JUMP, this.onPressJump, this);
+          Emitter.instance.on(EventCode.PLAYER.RELEASE_CONTROL, this.onReleaseControl, this);
           Emitter.instance.on(EventCode.ENEMY.LEFT_CLICK, this.onTarget, this);
+          Emitter.instance.on(EventCode.PLAYER.UN_ATTACK, this.onUnTarget, this);
+          this.node.on(EventCode.RIGID.COLLISION_BEGIN, this.onContact, this);
         };
 
-        _proto.update = function update(dt) {
-          _Creature.prototype.update.call(this, dt);
-
-          this.action(dt);
-        } //---- character control --- //
-        ;
-
-        _proto.onKeyBoardPress = function onKeyBoardPress(data) {
-          var _this2 = this;
-
-          var key = data.key,
-              isPress = data.isPress,
-              isHold = data.isHold,
-              listKeyPressing = data.listKeyPressing;
-
-          if (!isPress) {
-            var currentVelocity = this.rigidBody.linearVelocity;
-
-            if (listKeyPressing.length) {
-              listKeyPressing.map(function (e) {
-                if (e == KeyCode.KEY_A || e == KeyCode.KEY_D) {
-                  _this2.direction = e == KeyCode.KEY_D ? 1 : -1;
-                  _this2.isMoving = true;
-                }
-              });
-            } else {
-              this.isMoving = false;
-              this.rigidBody.linearVelocity = new Vec2(0, currentVelocity.y);
-            }
-          } else {
-            this.onUnTarget(this.targetNode);
-
-            switch (key) {
-              case KeyCode.KEY_A:
-              case KeyCode.KEY_D:
-                this.direction = key == KeyCode.KEY_D ? 1 : -1;
-                this.isMoving = true;
-                break;
-
-              case KeyCode.KEY_W:
-                if (!this.isJumping && this.rigidBody) {
-                  // Nếu không di chuyển (đứng yên), nhảy thẳng đứng
-                  var jumpVelocityX = this.direction !== 0 ? this.direction * this.moveSpeed * 0.5 : 0;
-                  this.rigidBody.linearVelocity = new Vec2(jumpVelocityX, this.jumpForce);
-                  this.isJumping = true;
-                  this.isMoving = false;
-                } else if (this.isJumping && !this.isDoubleJump && !isHold) {
-                  var doubleJumpVelocityX = this.direction !== 0 ? this.direction * this.moveSpeed * 0.5 : 0;
-                  this.rigidBody.linearVelocity = new Vec2(doubleJumpVelocityX, this.jumpForce);
-                  this.isDoubleJump = true;
-                }
-
-                break;
-            }
-          }
-        } //--- character action ---//
-        ;
-
-        _proto.action = function action(dt) {
-          this.handleAttack(dt);
-
-          if (this.isMoving) {
-            this.handleMoving(dt);
-          } else if (this.isJumping) {
-            if (this.state != creatureAction.jump && this.state != creatureAction.fall || this.isDoubleJump) {
-              this.state = creatureAction.jump;
-              this.playAnimation(creatureAction.jump);
-            }
-
-            var currentVelocity = this.rigidBody.linearVelocity;
-
-            if (currentVelocity.y < 0 && this.state != creatureAction.fall) {
-              this.state = creatureAction.fall;
-              this.playAnimation(creatureAction.fall);
-            }
-          } else if (!this.isAttack) {
-            {
-              if (this.state != creatureAction.idle) {
-                this.state = creatureAction.idle;
-                this.playAnimation(creatureAction.idle);
-              }
-            }
-          }
-
-          if (this.state == creatureAction.defense) {
-            this.defense();
-          }
+        _proto.onPressMove = function onPressMove(data) {
+          var key = data.key;
+          this.direction = key == KeyCode.KEY_D ? 1 : -1;
+          this.isMoving = true;
         };
 
-        _proto.handleMoving = function handleMoving(dt) {
-          if (this.rigidBody) {
-            var currentVelocity = this.rigidBody.linearVelocity; // Nếu đang trên mặt đất, di chuyển bình thường
-
-            if (!this.isJumping) {
-              this.rigidBody.linearVelocity = new Vec2(this.direction * this.moveSpeed, currentVelocity.y);
-              this.node.setScale(new Vec3(this.direction, 1, 1));
-
-              if (this.state != creatureAction.moving) {
-                this.state = creatureAction.moving;
-                this.playAnimation(creatureAction.moving);
-              }
-            } else {
-              // Trên không: kiểm soát di chuyển chậm hơn
-              var airVelocity = currentVelocity.x + this.direction * this.airControlFactor * this.moveSpeed * dt;
-              this.rigidBody.linearVelocity = new Vec2(airVelocity, currentVelocity.y);
-
-              if (this.state != creatureAction.jump) {
-                this.state = creatureAction.jump;
-                this.playAnimation(creatureAction.jump);
-              }
-
-              if (currentVelocity.y < 0) {
-                this.playAnimation('fall');
-              }
-            }
-          }
+        _proto.onPressJump = function onPressJump() {
+          if (this.isJumping && this.isDoubleJump) return;
+          this.jump();
         };
 
-        _proto.handleAttack = function handleAttack(dt) {
-          if (!this.targetNode) return;
-
-          if (this.rigidBody) {
-            var currentVelocity = this.rigidBody.linearVelocity; // Nếu đang trên mặt đất, di chuyển bình thường
-
-            if (this.targetNode) {
-              var playerPos = this.node.position;
-              var targetPos = this.targetNode.position;
-              var distance = Math.abs(playerPos.x - targetPos.x);
-              var targetDirection = targetPos.x > playerPos.x ? 1 : -1;
-
-              if (distance >= 20) {
-                // Nếu chưa đến gần mục tiêu
-                this.isMoving = true;
-                this.direction = targetDirection;
-
-                if (this.state != creatureAction.moving) {
-                  this.state = creatureAction.moving;
-                  this.playAnimation(creatureAction.moving);
-                }
-
-                this.rigidBody.linearVelocity = new Vec2(this.direction * this.moveSpeed, currentVelocity.y);
-                this.node.setScale(new Vec3(this.direction, 1, 1));
-              } else if (!this.isAttack) {
-                // Đã đến mục tiêu, dừng lại
-                this.isMoving = false;
-                this.direction = 0;
-                this.isAttack = true;
-                this.rigidBody.linearVelocity = new Vec2(0, currentVelocity.y);
-              }
-            }
-          }
-
-          this.attackSpeed -= dt;
-
-          if (this.isAttack && this.attackSpeed <= 0) {
-            if (this.state != creatureAction.attack) {
-              this.state = creatureAction.attack;
-              this.playAnimation(creatureAction.attack);
-              this.defaultAttackSpeedAnim = 0.2;
-              this.setSpeedAnimation(creatureAction.attack, 0.2);
-            }
-
-            this.attackSpeed = 1;
-            this.targetNode.emit(EventCode.ENEMY.ACTION.HIT, 10);
-          } else if (this.isAttack && this.defaultAttackSpeedAnim <= 0) {
-            if (this.state != creatureAction.idle) {
-              this.state = creatureAction.idle;
-              this.playAnimation(creatureAction.idle);
-            }
-          }
-
-          this.defaultAttackSpeedAnim -= dt;
-        };
-
-        _proto.handleJump = function handleJump() {
-          if (this.rigidBody) {
-            this.rigidBody.applyForceToCenter(new Vec2(0, this.jumpForce), true);
-          }
+        _proto.onReleaseControl = function onReleaseControl(data) {
+          this.isMoving = false;
+          if (this.isJumping) return;
+          this.idle();
         };
 
         _proto.defense = function defense() {//Todo: defense;
         };
 
-        _proto.attack = function attack(target) {
-          var playerPos = this.node.getWorldPosition();
-          var targetPos = this.targetNode.getWorldPosition();
-          console.warn(playerPos, targetPos);
-        };
-
-        _proto.playAnimation = function playAnimation(animString) {
-          this.animationChar.stop();
-          this.animationChar.play(animString);
-          this.debugWarn(animString);
-        };
-
-        _proto.setSpeedAnimation = function setSpeedAnimation(animString, speed) {
-          this.animationChar.getState(animString).speed = speed;
-        };
-
         _proto.onContact = function onContact() {
           this.isJumping = false;
           this.isDoubleJump = false;
-          this.playAnimation(creatureAction.idle);
+
+          if (!this.isMoving) {
+            this.idle();
+          }
         };
 
         _proto.onTarget = function onTarget(target) {
@@ -308,28 +119,24 @@ System.register("chunks:///_virtual/CharacterCtrl.ts", ['./rollupPluginModLoBabe
             }
 
             this.targetNode = target;
-            this.attack(target);
             target.emit(EventCode.ENEMY.ACTION.TARGETED, true);
           }
         };
 
         _proto.onUnTarget = function onUnTarget(target) {
-          if (!target) return;
+          var targetNode = target || this.targetNode;
+          if (!targetNode) return;
 
-          if (target['type'] == EventCode.ENEMY.TYPE.NORMAL) {
-            target.emit(EventCode.ENEMY.ACTION.TARGETED, false);
+          if (targetNode['type'] == EventCode.ENEMY.TYPE.NORMAL) {
+            targetNode.emit(EventCode.ENEMY.ACTION.TARGETED, false);
           }
 
           this.targetNode = null;
-          this.isAttack = false;
-        };
-
-        _proto.setSpeed = function setSpeed(value) {
-          this.moveSpeed = value;
+          this.canAttack = false;
         };
 
         return CharacterCtrl;
-      }(Creature)) || _class));
+      }(DynamicEntity)) || _class));
 
       cclegacy._RF.pop();
     }
@@ -407,98 +214,26 @@ System.register("chunks:///_virtual/CheatCtrl.ts", ['./rollupPluginModLoBabelHel
   };
 });
 
-System.register("chunks:///_virtual/Creature.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './GameBaseComponent.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, BoxCollider2D, Animation, RigidBody2D, GameBaseComponent;
-
+System.register("chunks:///_virtual/Config.ts", ['cc'], function (exports) {
+  var cclegacy;
   return {
     setters: [function (module) {
-      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
-      _inheritsLoose = module.inheritsLoose;
-      _initializerDefineProperty = module.initializerDefineProperty;
-      _assertThisInitialized = module.assertThisInitialized;
-    }, function (module) {
       cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      BoxCollider2D = module.BoxCollider2D;
-      Animation = module.Animation;
-      RigidBody2D = module.RigidBody2D;
-    }, function (module) {
-      GameBaseComponent = module.GameBaseComponent;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3;
+      cclegacy._RF.push({}, "7c11aPOKJ5Fy5e0hClntWr2", "Config", undefined);
 
-      cclegacy._RF.push({}, "40cdaCRPttOf5K2XYPTw09B", "Creature", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      var creatureAction = exports('creatureAction', {
-        idle: 'idle',
-        jump: 'jump',
-        defense: 'defense',
-        moving: 'run',
-        attack: 'attack',
-        fall: 'fall'
+      var config = exports('default', {
+        PLAYER: {
+          HEATH_POINT: 400,
+          MANA_POINT: 400,
+          ATTACK_DAMAGE: 100,
+          ABILITY_POWER: 20,
+          DEFENSE_ARMOR: 20,
+          MOVE_SPEED: 4,
+          NORMAL_ATTACK_SPEED: 0.8
+        }
       });
-      var Creature = exports('Creature', (_dec = ccclass('Creature'), _dec2 = property(BoxCollider2D), _dec3 = property(Animation), _dec4 = property(RigidBody2D), _dec(_class = (_class2 = /*#__PURE__*/function (_GameBaseComponent) {
-        _inheritsLoose(Creature, _GameBaseComponent);
-
-        function Creature() {
-          var _this;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
-
-          _initializerDefineProperty(_this, "boxCollider", _descriptor, _assertThisInitialized(_this));
-
-          _initializerDefineProperty(_this, "animationChar", _descriptor2, _assertThisInitialized(_this));
-
-          _initializerDefineProperty(_this, "rigidBody", _descriptor3, _assertThisInitialized(_this));
-
-          _this.moveSpeed = 4;
-          _this.attackSpeed = 0;
-          _this.defaultAttackSpeedAnim = 0.4;
-          _this.jumpForce = 5;
-          _this.state = creatureAction.idle;
-          _this.isJumping = false;
-          _this.isDoubleJump = false;
-          _this.isMoving = false;
-          _this.isAttack = false;
-          return _this;
-        }
-
-        var _proto = Creature.prototype;
-
-        _proto.start = function start() {};
-
-        _proto.update = function update(deltaTime) {};
-
-        return Creature;
-      }(GameBaseComponent), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boxCollider", [_dec2], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "animationChar", [_dec3], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "rigidBody", [_dec4], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      })), _class2)) || _class));
 
       cclegacy._RF.pop();
     }
@@ -863,6 +598,233 @@ System.register("chunks:///_virtual/debug-view-runtime-control.ts", ['./rollupPl
   };
 });
 
+System.register("chunks:///_virtual/DynamicEntity.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './GameBaseComponent.ts', './Emitter.ts', './EventCode.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, BoxCollider2D, Animation, RigidBody2D, Vec2, Vec3, GameBaseComponent, Emitter, EventCode;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      BoxCollider2D = module.BoxCollider2D;
+      Animation = module.Animation;
+      RigidBody2D = module.RigidBody2D;
+      Vec2 = module.Vec2;
+      Vec3 = module.Vec3;
+    }, function (module) {
+      GameBaseComponent = module.GameBaseComponent;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      EventCode = module.default;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3;
+
+      cclegacy._RF.push({}, "5a9bfZE/mpBj63oCLQE2Prl", "DynamicEntity", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var action = exports('action', {
+        idle: 'idle',
+        jump: 'jump',
+        defense: 'defense',
+        moving: 'run',
+        attack: 'attack',
+        fall: 'fall'
+      });
+      var DynamicEntity = exports('DynamicEntity', (_dec = ccclass('DynamicEntity'), _dec2 = property(BoxCollider2D), _dec3 = property(Animation), _dec4 = property(RigidBody2D), _dec(_class = (_class2 = /*#__PURE__*/function (_GameBaseComponent) {
+        _inheritsLoose(DynamicEntity, _GameBaseComponent);
+
+        function DynamicEntity() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_this, "boxCollider", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "animationChar", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_this, "rigidBody", _descriptor3, _assertThisInitialized(_this));
+
+          _this.moveSpeed = 4;
+          _this.attackSpeed = 0;
+          _this.speedAnim = 0.4;
+          _this.jumpForce = 5;
+          _this.direction = 0;
+          _this.state = action.idle;
+          _this.isJumping = false;
+          _this.isDoubleJump = false;
+          _this.isMoving = false;
+          _this.canAttack = false;
+          _this.targetNode = null;
+          return _this;
+        }
+
+        var _proto = DynamicEntity.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.initEvent();
+        };
+
+        _proto.update = function update(deltaTime) {
+          this.action(deltaTime);
+        };
+
+        _proto.initEvent = function initEvent() {
+          Emitter.instance.on('SET_SPEED', this.setSpeed, this);
+        };
+
+        _proto.setSpeed = function setSpeed(value) {
+          this.moveSpeed = value;
+        };
+
+        _proto.action = function action(dt) {
+          if (this.isMoving) {
+            this.handleMoving(dt);
+          }
+
+          this.handleAttack(dt);
+          this.handleFall();
+        };
+
+        _proto.handleMoving = function handleMoving(dt) {
+          if (this.rigidBody) {
+            this.move();
+          }
+        };
+
+        _proto.move = function move() {
+          var currentVelocity = this.rigidBody.linearVelocity;
+          this.rigidBody.linearVelocity = new Vec2(this.direction * this.moveSpeed, currentVelocity.y);
+          this.node.setScale(new Vec3(this.direction, 1, 1));
+          !this.isJumping && this.playAnimation(action.moving);
+        };
+
+        _proto.handleAttack = function handleAttack(dt) {
+          if (!this.targetNode) return;
+          this.debugLog('attack', this.attackSpeed);
+
+          if (this.rigidBody) {
+            var currentVelocity = this.rigidBody.linearVelocity;
+            var playerPos = this.node.position;
+            var targetPos = this.targetNode.position;
+            var distance = Math.abs(playerPos.x - targetPos.x);
+            var targetDirection = targetPos.x > playerPos.x ? 1 : -1;
+
+            if (distance >= 20) {
+              this.isMoving = true;
+              this.direction = targetDirection;
+              this.rigidBody.linearVelocity = new Vec2(this.direction * this.moveSpeed, currentVelocity.y);
+              this.node.setScale(new Vec3(this.direction, 1, 1));
+              this.playAnimation(action.moving);
+            } else if (!this.canAttack) {
+              this.isMoving = false;
+              this.direction = 0;
+              this.canAttack = true;
+              this.rigidBody.linearVelocity = new Vec2(0, currentVelocity.y);
+            }
+          }
+
+          this.canAttack && this.attack(dt);
+        };
+
+        _proto.attack = function attack(dt) {
+          this.attackSpeed -= dt;
+
+          if (this.attackSpeed <= 0) {
+            this.playAnimation(action.attack);
+            this.speedAnim = 0.2;
+            this.setSpeedAnimation(action.attack, 0.2);
+            this.attackSpeed = 1;
+            this.targetNode.emit(EventCode.ENEMY.ACTION.HIT, 10);
+          } else if (this.speedAnim <= 0) {
+            this.playAnimation(action.idle);
+          }
+
+          this.speedAnim -= dt;
+        };
+
+        _proto.jump = function jump() {
+          if (!this.rigidBody) return;
+
+          if (!this.isJumping) {
+            var jumpVelocityX = 0;
+            this.rigidBody.linearVelocity = new Vec2(jumpVelocityX, this.jumpForce);
+            this.isJumping = true;
+            this.playAnimation(action.jump);
+          } else if (this.isJumping && !this.isDoubleJump) {
+            var doubleJumpVelocityX = 0;
+            this.rigidBody.linearVelocity = new Vec2(doubleJumpVelocityX, this.jumpForce);
+            this.isDoubleJump = true;
+          }
+        };
+
+        _proto.handleFall = function handleFall() {
+          if (!this.rigidBody) return;
+          var currentVelocity = this.rigidBody.linearVelocity;
+
+          if (currentVelocity.y < 0 && this.isJumping) {
+            this.playAnimation(action.fall);
+          }
+        };
+
+        _proto.idle = function idle() {
+          this.isMoving = false;
+          var currentVelocity = this.rigidBody.linearVelocity;
+          this.rigidBody.linearVelocity = new Vec2(0, currentVelocity.y);
+          this.playAnimation(action.idle);
+        };
+
+        _proto.playAnimation = function playAnimation(animString) {
+          if (this.state != animString) {
+            this.state = animString;
+            this.animationChar.stop();
+            this.animationChar.play(animString);
+          }
+        };
+
+        _proto.setSpeedAnimation = function setSpeedAnimation(animString, speed) {
+          this.animationChar.getState(animString).speed = speed;
+        };
+
+        return DynamicEntity;
+      }(GameBaseComponent), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boxCollider", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "animationChar", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "rigidBody", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
 System.register("chunks:///_virtual/Emitter.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
   var _inheritsLoose, cclegacy, _decorator, EventTarget, Component;
 
@@ -1039,10 +1001,14 @@ System.register("chunks:///_virtual/EventCode.ts", ['cc'], function (exports) {
             TARGETED: "ENE_ACT_TARGETED"
           }
         },
-        CHARACTER: {
+        PLAYER: {
           ATTACK: {
-            NORMAL: 'CHA_ATT_NORMAL'
-          }
+            NORMAL: 'PLAYER_ATT_NORMAL'
+          },
+          MOVE: "PLAYER_MOVE",
+          JUMP: "PLAYER_JUMP",
+          RELEASE_CONTROL: "RELEASE_CONTROL",
+          UN_ATTACK: "PLAYER_UN_ATT_NORMAL"
         }
       });
 
@@ -1304,6 +1270,157 @@ System.register("chunks:///_virtual/JoystickCtrl.ts", ['./rollupPluginModLoBabel
   };
 });
 
+System.register("chunks:///_virtual/KeyBoardCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts', './Emitter.ts', './GameBaseComponent.ts'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, KeyCode, input, Input, EventCode, Emitter, GameBaseComponent;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      KeyCode = module.KeyCode;
+      input = module.input;
+      Input = module.Input;
+    }, function (module) {
+      EventCode = module.default;
+    }, function (module) {
+      Emitter = module.Emitter;
+    }, function (module) {
+      GameBaseComponent = module.GameBaseComponent;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "d71f3LopcNJ+qZnHBDQG+0M", "KeyBoardCtrl", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var KEY_CONFIG = exports('KEY_CONFIG', {
+        PLAYER_CONTROL: {
+          MOVE_LEFT: KeyCode.KEY_A,
+          MOVE_RIGHT: KeyCode.KEY_D,
+          JUMP: KeyCode.KEY_W,
+          DEFENSE: KeyCode.KEY_S,
+          SKILL_1: KeyCode.KEY_Q,
+          SKILL_2: KeyCode.KEY_E,
+          ULTIMATE: KeyCode.KEY_R,
+          ITEM_1: KeyCode.DIGIT_1,
+          ITEM_2: KeyCode.DIGIT_2
+        }
+      });
+      var KeyBoardCtrl = exports('KeyBoardCtrl', (_dec = ccclass('KeyBoardCtrl'), _dec(_class = /*#__PURE__*/function (_GameBaseComponent) {
+        _inheritsLoose(KeyBoardCtrl, _GameBaseComponent);
+
+        function KeyBoardCtrl() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
+          _this.listKeyPressing = [];
+          return _this;
+        }
+
+        var _proto = KeyBoardCtrl.prototype;
+
+        _proto.onLoad = function onLoad() {
+          this.initEvent();
+        };
+
+        _proto.initEvent = function initEvent() {
+          input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+          input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+          input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+        };
+
+        _proto.onKeyDown = function onKeyDown(key) {
+          this.listKeyPressing.indexOf(key.keyCode) == -1 && this.listKeyPressing.push(key.keyCode);
+          var data = {
+            key: key.keyCode,
+            isPress: false,
+            isHold: false,
+            listKeyPressing: this.listKeyPressing
+          };
+
+          switch (key.keyCode) {
+            case KeyCode.KEY_A:
+            case KeyCode.KEY_D:
+              Emitter.instance.emit(EventCode.PLAYER.MOVE, data);
+              Emitter.instance.emit(EventCode.PLAYER.UN_ATTACK);
+              break;
+
+            case KeyCode.KEY_W:
+              Emitter.instance.emit(EventCode.PLAYER.JUMP, data);
+              Emitter.instance.emit(EventCode.PLAYER.UN_ATTACK);
+              break;
+          }
+        };
+
+        _proto.onKeyUp = function onKeyUp(key) {
+          var _this2 = this;
+
+          this.listKeyPressing.map(function (e, index) {
+            e == key.keyCode && _this2.listKeyPressing.splice(index, 1);
+          });
+          var data = {
+            key: key.keyCode,
+            isPress: false,
+            isHold: false,
+            listKeyPressing: this.listKeyPressing
+          };
+
+          if (this.listKeyPressing.length > 0) {
+            this.listKeyPressing.map(function (key) {
+              switch (key.keyCode) {
+                case KeyCode.KEY_A:
+                case KeyCode.KEY_D:
+                  Emitter.instance.emit(EventCode.PLAYER.MOVE, data);
+                  break;
+
+                case KeyCode.KEY_W:
+                  Emitter.instance.emit(EventCode.PLAYER.JUMP, data);
+                  break;
+              }
+            });
+          } else {
+            Emitter.instance.emit(EventCode.PLAYER.RELEASE_CONTROL, data);
+          }
+        };
+
+        _proto.onKeyPressing = function onKeyPressing(key) {
+          var data = {
+            key: key.keyCode,
+            isPress: true,
+            isHold: true,
+            listKeyPressing: this.listKeyPressing
+          };
+
+          switch (key.keyCode) {
+            case KeyCode.KEY_W:
+              Emitter.instance.emit(EventCode.PLAYER.JUMP, data);
+              break;
+          }
+        };
+
+        _proto.onDestroy = function onDestroy() {
+          _GameBaseComponent.prototype.onDestroy.call(this);
+
+          input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+          input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+          input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+        };
+
+        return KeyBoardCtrl;
+      }(GameBaseComponent)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
 System.register("chunks:///_virtual/LoadGameByPrefabs.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './GameConfigFC2D.ts'], function (exports) {
   var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Prefab, instantiate, Component, GameConfigFC2D;
 
@@ -1521,7 +1638,7 @@ System.register("chunks:///_virtual/LoginController.ts", ['./rollupPluginModLoBa
   };
 });
 
-System.register("chunks:///_virtual/main", ['./debug-view-runtime-control.ts', './CharacterCtrl.ts', './SmoothCharacterMovement.ts', './UserControl.ts', './DataStore.ts', './Emitter.ts', './EventCode.ts', './GameBaseComponent.ts', './GameConfigFC2D.ts', './GameInitialization.ts', './LoadGameByPrefabs.ts', './LoadingController.ts', './LoginController.ts', './BackgroundCtrl.ts', './CheatCtrl.ts', './Creature.ts', './GroundCellCtrl.ts', './JoystickCtrl.ts', './MapCtrl.ts', './NodePoolContainerCtrl.ts', './PlayerCtrl.ts', './RigidCtrl.ts', './Utils.ts', './EnemyController.ts'], function () {
+System.register("chunks:///_virtual/main", ['./debug-view-runtime-control.ts', './CharacterCtrl.ts', './DataStore.ts', './Emitter.ts', './EventCode.ts', './GameBaseComponent.ts', './GameConfigFC2D.ts', './GameInitialization.ts', './LoadGameByPrefabs.ts', './LoadingController.ts', './LoginController.ts', './BackgroundCtrl.ts', './CheatCtrl.ts', './Config.ts', './DynamicEntity.ts', './GroundCellCtrl.ts', './JoystickCtrl.ts', './KeyBoardCtrl.ts', './MapCtrl.ts', './NodePoolContainerCtrl.ts', './PlayerLayer.ts', './RigidCtrl.ts', './Utils.ts', './EnemyController.ts'], function () {
   return {
     setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     execute: function () {}
@@ -1668,7 +1785,7 @@ System.register("chunks:///_virtual/NodePoolContainerCtrl.ts", ['./rollupPluginM
   };
 });
 
-System.register("chunks:///_virtual/PlayerCtrl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './NodePoolContainerCtrl.ts'], function (exports) {
+System.register("chunks:///_virtual/PlayerLayer.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './NodePoolContainerCtrl.ts'], function (exports) {
   var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, Prefab, Component, NodePoolContainerCtrl;
 
   return {
@@ -1689,14 +1806,14 @@ System.register("chunks:///_virtual/PlayerCtrl.ts", ['./rollupPluginModLoBabelHe
     execute: function () {
       var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2;
 
-      cclegacy._RF.push({}, "1e13b50jTFNs7FY/y09LmxR", "PlayerCtrl", undefined);
+      cclegacy._RF.push({}, "0fbf0L6wP1NDbIA2pG6iaa+", "PlayerLayer", undefined);
 
       var ccclass = _decorator.ccclass,
           property = _decorator.property;
-      var PlayerCtrl = exports('PlayerCtrl', (_dec = ccclass('PlayerCtrl'), _dec2 = property(Node), _dec3 = property(Prefab), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(PlayerCtrl, _Component);
+      var PlayerLayer = exports('PlayerLayer', (_dec = ccclass('PlayerLayer'), _dec2 = property(Node), _dec3 = property(Prefab), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(PlayerLayer, _Component);
 
-        function PlayerCtrl() {
+        function PlayerLayer() {
           var _this;
 
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -1712,7 +1829,7 @@ System.register("chunks:///_virtual/PlayerCtrl.ts", ['./rollupPluginModLoBabelHe
           return _this;
         }
 
-        var _proto = PlayerCtrl.prototype;
+        var _proto = PlayerLayer.prototype;
 
         _proto.onLoad = function onLoad() {};
 
@@ -1722,7 +1839,7 @@ System.register("chunks:///_virtual/PlayerCtrl.ts", ['./rollupPluginModLoBabelHe
           NodePoolContainerCtrl.instance.character.forEach(function (character) {});
         };
 
-        return PlayerCtrl;
+        return PlayerLayer;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "playerPool", [_dec2], {
         configurable: true,
         enumerable: true,
@@ -1835,322 +1952,6 @@ System.register("chunks:///_virtual/RigidCtrl.ts", ['./rollupPluginModLoBabelHel
           return null;
         }
       }), _class2)) || _class));
-
-      cclegacy._RF.pop();
-    }
-  };
-});
-
-System.register("chunks:///_virtual/SmoothCharacterMovement.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './UserControl.ts', './GameBaseComponent.ts', './Emitter.ts', './EventCode.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Animation, Vec3, RigidBody2D, Vec2, KEY_CONFIG, GameBaseComponent, Emitter, EventCode;
-
-  return {
-    setters: [function (module) {
-      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
-      _inheritsLoose = module.inheritsLoose;
-      _initializerDefineProperty = module.initializerDefineProperty;
-      _assertThisInitialized = module.assertThisInitialized;
-    }, function (module) {
-      cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      Animation = module.Animation;
-      Vec3 = module.Vec3;
-      RigidBody2D = module.RigidBody2D;
-      Vec2 = module.Vec2;
-    }, function (module) {
-      KEY_CONFIG = module.KEY_CONFIG;
-    }, function (module) {
-      GameBaseComponent = module.GameBaseComponent;
-    }, function (module) {
-      Emitter = module.Emitter;
-    }, function (module) {
-      EventCode = module.default;
-    }],
-    execute: function () {
-      var _dec, _dec2, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
-
-      cclegacy._RF.push({}, "d00c9gctaNAyK+0zJet59Kv", "SmoothCharacterMovement", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      var characterState = {
-        idle: 'idle',
-        jump: 'jump',
-        defense: 'defense',
-        run: 'run',
-        attack: 'attack'
-      };
-      var SmoothCharacterMovement = exports('SmoothCharacterMovement', (_dec = ccclass('SmoothCharacterMovement'), _dec2 = property(Animation), _dec(_class = (_class2 = /*#__PURE__*/function (_GameBaseComponent) {
-        _inheritsLoose(SmoothCharacterMovement, _GameBaseComponent);
-
-        function SmoothCharacterMovement() {
-          var _this;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
-
-          _initializerDefineProperty(_this, "moveSpeed", _descriptor, _assertThisInitialized(_this));
-
-          _initializerDefineProperty(_this, "jumpForce", _descriptor2, _assertThisInitialized(_this));
-
-          _initializerDefineProperty(_this, "directionChangeSpeed", _descriptor3, _assertThisInitialized(_this)); // Speed of direction smooth transition
-
-
-          _initializerDefineProperty(_this, "animFbf", _descriptor4, _assertThisInitialized(_this));
-
-          _this._velocity = new Vec3();
-          _this._currentDirection = new Vec3();
-          _this._targetDirection = new Vec3();
-          _this._activeKeys = new Set();
-          _this._rigidBody = null;
-          _this._stateCurrent = null;
-          return _this;
-        }
-
-        var _proto = SmoothCharacterMovement.prototype;
-
-        _proto.start = function start() {
-          // Initialize input listeners and get Rigidbody
-          Emitter.instance.on(EventCode.KEY_BOARD, this.onKeyBoardPress, this);
-          Emitter.instance.on('SET_SPEED', this.setSpeed, this);
-          this._rigidBody = this.getComponent(RigidBody2D);
-          this._stateCurrent = characterState.idle;
-        };
-
-        _proto.update = function update(dt) {
-          // Reset horizontal target direction based on active keys
-          this._targetDirection.x = 0;
-
-          if (this._activeKeys.has(KEY_CONFIG.PLAYER_CONTROL.MOVE_LEFT)) {
-            this._targetDirection.x = -1;
-            this.run(dt);
-            this.setDirectorCharacter(-1);
-          } else if (this._activeKeys.has(KEY_CONFIG.PLAYER_CONTROL.MOVE_RIGHT)) {
-            this._targetDirection.x = 1;
-            this.setDirectorCharacter(1);
-            this.run(dt);
-          }
-
-          if (this._stateCurrent == characterState.idle) {
-            this._targetDirection.x = 0;
-          }
-        };
-
-        _proto.onKeyBoardPress = function onKeyBoardPress(data) {
-          var key = data.key,
-              isPress = data.isPress,
-              isHold = data.isHold;
-
-          if (!isPress) {
-            this._activeKeys["delete"](key.keyCode);
-
-            this._stateCurrent = characterState.idle;
-          } else {
-            switch (key.keyCode) {
-              case KEY_CONFIG.PLAYER_CONTROL.MOVE_LEFT:
-              case KEY_CONFIG.PLAYER_CONTROL.MOVE_RIGHT:
-                this._activeKeys.add(key.keyCode);
-
-                this._stateCurrent = characterState.run;
-                this.playAnimation(characterState.run);
-                break;
-
-              case KEY_CONFIG.PLAYER_CONTROL.JUMP:
-                if (this._rigidBody) {
-                  var currentVelocity = this._rigidBody.linearVelocity;
-
-                  if (Math.abs(currentVelocity.y) < 0.01) {
-                    // Check if grounded
-                    this._rigidBody.applyLinearImpulseToCenter(new Vec2(0, this.jumpForce), true);
-
-                    this._stateCurrent = characterState.jump;
-                    this.playAnimation(characterState.jump);
-                  }
-                }
-
-                break;
-            }
-          }
-        };
-
-        _proto.playAnimation = function playAnimation(name) {
-          this.animFbf.stop();
-          this.animFbf.play(name);
-        };
-
-        _proto.setDirectorCharacter = function setDirectorCharacter(director) {
-          this.node.setScale(new Vec3(director, this.node.scale.y, this.node.scale.z));
-        };
-
-        _proto.run = function run(dt) {
-          // Smoothly interpolate current direction to target direction
-          this._currentDirection.lerp(this._targetDirection, this.directionChangeSpeed * dt); // Apply movement based on current direction
-
-
-          this._velocity.set(this._currentDirection);
-
-          this._velocity.normalize().multiplyScalar(this.moveSpeed * dt);
-
-          var newPosition = new Vec3(this.node.position);
-          newPosition.x += this._velocity.x;
-          this.node.setPosition(newPosition);
-        };
-
-        _proto.setSpeed = function setSpeed(value) {
-          this.moveSpeed = value;
-        };
-
-        return SmoothCharacterMovement;
-      }(GameBaseComponent), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "moveSpeed", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 5;
-        }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "jumpForce", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 10;
-        }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "directionChangeSpeed", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 10;
-        }
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "animFbf", [_dec2], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      })), _class2)) || _class));
-
-      cclegacy._RF.pop();
-    }
-  };
-});
-
-System.register("chunks:///_virtual/UserControl.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './EventCode.ts', './Emitter.ts', './GameBaseComponent.ts'], function (exports) {
-  var _inheritsLoose, cclegacy, _decorator, KeyCode, input, Input, EventCode, Emitter, GameBaseComponent;
-
-  return {
-    setters: [function (module) {
-      _inheritsLoose = module.inheritsLoose;
-    }, function (module) {
-      cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      KeyCode = module.KeyCode;
-      input = module.input;
-      Input = module.Input;
-    }, function (module) {
-      EventCode = module.default;
-    }, function (module) {
-      Emitter = module.Emitter;
-    }, function (module) {
-      GameBaseComponent = module.GameBaseComponent;
-    }],
-    execute: function () {
-      var _dec, _class;
-
-      cclegacy._RF.push({}, "65a5erdHE9O/oLuSbi7GTCp", "UserControl", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      var KEY_CONFIG = exports('KEY_CONFIG', {
-        PLAYER_CONTROL: {
-          MOVE_LEFT: KeyCode.KEY_A,
-          MOVE_RIGHT: KeyCode.KEY_D,
-          JUMP: KeyCode.KEY_W,
-          DEFENSE: KeyCode.KEY_S,
-          SKILL_1: KeyCode.KEY_Q,
-          SKILL_2: KeyCode.KEY_E,
-          ULTIMATE: KeyCode.KEY_R,
-          ITEM_1: KeyCode.DIGIT_1,
-          ITEM_2: KeyCode.DIGIT_2
-        }
-      });
-      var UserControl = exports('UserControl', (_dec = ccclass('UserControl'), _dec(_class = /*#__PURE__*/function (_GameBaseComponent) {
-        _inheritsLoose(UserControl, _GameBaseComponent);
-
-        function UserControl() {
-          var _this;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this = _GameBaseComponent.call.apply(_GameBaseComponent, [this].concat(args)) || this;
-          _this.listKeyPressing = [];
-          return _this;
-        }
-
-        var _proto = UserControl.prototype;
-
-        _proto.onLoad = function onLoad() {
-          this.initEvent();
-        };
-
-        _proto.initEvent = function initEvent() {
-          input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-          input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-          input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
-        };
-
-        _proto.onKeyDown = function onKeyDown(key) {
-          this.listKeyPressing.indexOf(key.keyCode) == -1 && this.listKeyPressing.push(key.keyCode);
-          var data = {
-            key: key.keyCode,
-            isPress: true,
-            isHold: false,
-            listKeyPressing: this.listKeyPressing
-          };
-          Emitter.instance.emit(EventCode.KEY_BOARD, data);
-        };
-
-        _proto.onKeyUp = function onKeyUp(key) {
-          var _this2 = this;
-
-          this.listKeyPressing.map(function (e, index) {
-            e == key.keyCode && _this2.listKeyPressing.splice(index, 1);
-          });
-          var data = {
-            key: key.keyCode,
-            isPress: false,
-            isHold: false,
-            listKeyPressing: this.listKeyPressing
-          };
-          Emitter.instance.emit(EventCode.KEY_BOARD, data);
-        };
-
-        _proto.onKeyPressing = function onKeyPressing(key) {
-          var data = {
-            key: key.keyCode,
-            isPress: true,
-            isHold: true,
-            listKeyPressing: this.listKeyPressing
-          };
-          Emitter.instance.emit(EventCode.KEY_BOARD, data);
-        };
-
-        _proto.onDestroy = function onDestroy() {
-          _GameBaseComponent.prototype.onDestroy.call(this);
-
-          input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-          input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
-          input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
-        };
-
-        return UserControl;
-      }(GameBaseComponent)) || _class));
 
       cclegacy._RF.pop();
     }
